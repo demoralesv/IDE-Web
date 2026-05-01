@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="assets/styles/style.css" rel="stylesheet">
-    <title>Iniciar Sesión | SIED</title>
+    <title>Registrarse | SIED</title>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>Bienvenido Docente</h1>
-            <p>Inicia sesión en tu cuenta para continuar</p>
+            <h1>Registrarse</h1>
+            <p>Crea una nueva cuenta para continuar</p>
         </div>
 
-        
+       
 
         <form method="POST" action="">
             <div class="form-group">
