@@ -11,7 +11,7 @@ try {
     $database = new ApiDatabase();
     $connection = $database->connect();
 
-    $query = "SELECT id, nombre, email FROM usuario";
+    $query = "SELECT ID, nombre, correo FROM usuario";
     $statement = $connection->prepare($query);
     $statement->execute();
 
