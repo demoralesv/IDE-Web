@@ -18,8 +18,7 @@ try {
     $usuarios = $statement->fetchAll();
 
     echo json_encode([
-        "success" => true,
-        "data" => $usuarios
+        $usuarios
     ]);
 
 } catch (Exception $e) {
