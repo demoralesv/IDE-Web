@@ -161,7 +161,15 @@ input[type="text"]:focus {
   }
 }
 
-
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    border: 1px solid #c3e6cb;
+}
 /* Layout general para páginas internas */
 
 .app-layout {
@@ -170,7 +178,7 @@ input[type="text"]:focus {
   background: var(--background-color);
 }
 
-/* Sidebar tipo LMS */
+/* Sidebar */
 
 .sidebar {
   width: 260px;

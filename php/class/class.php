@@ -35,16 +35,22 @@ function login($email, $userPassword) {
     return false;
 }
 
+
 function register($name, $lastname, $email, $userPassword) {
     global $conn;
 
     try {
+        $conn->beginTransaction();
+
         $checkStmt = $conn->prepare("SELECT ID FROM usuario WHERE correo = :correo");
         $checkStmt->execute([
             ":correo" => $email
         ]);
 
-        if ($checkStmt->rowCount() > 0) {
+        $existingUser = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($existingUser) {
+            $conn->rollBack();
             return false;
         }
 
@@ -58,7 +64,7 @@ function register($name, $lastname, $email, $userPassword) {
             VALUES (:id, :nombre, :apellido1, :correo, :password)
         ");
 
-        return $stmt->execute([
+        $userInserted = $stmt->execute([
             ":id" => $nextId,
             ":nombre" => $name,
             ":apellido1" => $lastname,
@@ -66,17 +72,39 @@ function register($name, $lastname, $email, $userPassword) {
             ":password" => $hashedPassword
         ]);
 
+        if (!$userInserted) {
+            $conn->rollBack();
+            return false;
+        }
+        //*********************************************************************Agregar el usuario recien creado como profesor */
+        $teacherStmt = $conn->prepare("
+            INSERT INTO profesor (ID)
+            VALUES (:id)
+        ");
+
+        $teacherInserted = $teacherStmt->execute([
+            ":id" => $nextId
+        ]);
+
+        if (!$teacherInserted) {
+            $conn->rollBack();
+            return false;
+        }
+
+        $conn->commit();
+        return true;
+
     } catch (PDOException $e) {
-        error_log("Error en register: " . $e->getMessage());
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+
+        error_log("Error al crear usuario: " . $e->getMessage());
         return false;
     }
 }
 
 // *************************************************************************** Funciones de profe
-
-function addTeacher($email) {
-    // agregar logica para agregar un profe
-}
 
 function addCurse($name, $teacherId) {
     // agregar logica para agregar un curso

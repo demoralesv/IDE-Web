@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="login-container">
         <div class="login-header">
             <h1>Bienvenido Docente</h1>
-            <p>Inicia sesión en tu cuenta para continuar</p>
+            <p>Inicia sesión para continuar</p>
         </div>
 
         <?php if (!empty($error)): ?>
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" minlength="8" required>
             </div>
 
             <button type="submit">Iniciar sesión</button>
