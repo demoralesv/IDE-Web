@@ -162,14 +162,32 @@ input[type="text"]:focus {
 }
 
 .success-message {
-    background-color: #d4edda;
-    color: #155724;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    text-align: center;
-    border: 1px solid #c3e6cb;
+  background-color: #d4edda;
+  color: #155724;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #c3e6cb;
 }
+
+.error-message {
+  display: none;
+  color: var(--danger-color);
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.error-message.show {
+  display: block;
+}
+
+input.input-error {
+  border-color: var(--danger-color) !important;
+  background-color: rgba(194, 0, 0, 0.05);
+}
+
 /* Layout general para páginas internas */
 
 .app-layout {
@@ -224,7 +242,9 @@ input[type="text"]:focus {
   text-decoration: none;
   border-radius: 8px;
   font-size: 15px;
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 
 .menu-item:hover {
@@ -363,7 +383,9 @@ input[type="text"]:focus {
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .quick-action:hover {
@@ -433,4 +455,45 @@ input[type="text"]:focus {
   .quick-actions {
     grid-template-columns: 1fr;
   }
+}
+
+.page404-container {
+  text-align: center;
+  color: var(--extra1-color);
+}
+.page404-code {
+  font-size: 120px;
+  margin: 0;
+  font-weight: 700;
+  color: var(--danger-color);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.page404-title {
+  font-size: 28px;
+  margin: 20px 0;
+  font-weight: 600;
+  color: var(--extra1-color);
+}
+.page404-description {
+  font-size: 16px;
+  margin: 15px 0;
+  opacity: 0.8;
+  color: var(--extra1-color);
+}
+.page404-button {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 12px 30px;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.page404-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(83, 109, 130, 0.4);
 }
