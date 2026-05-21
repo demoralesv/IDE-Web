@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 require_once __DIR__ . '/class/class.php';
@@ -9,8 +10,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
-    if (login($email, $password)) {
+    if ($auth->login($email, $password)) {
         $_SESSION["usuario"] = $email;
+        $_SESSION["ID"] = $teacherModel->getTeacherId($email);
 
         header("Location: panel.php");
         exit;
@@ -76,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 passwordError.classList.remove('show');
                 passwordInput.classList.remove('input-error');
             });
+
             function validarFormatoEmail(email) {
                 const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return regexEmail.test(email);

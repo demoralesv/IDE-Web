@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
@@ -11,7 +14,7 @@ require_once __DIR__ . '/class/class.php';
 function countTableRows($tableName) {
     global $conn;
 
-    $allowedTables = ["curso", "usuario", "evaluacion", "entrega"];
+    $allowedTables = ["curso", "profesor", "evaluacion", "entrega"];
 
     if (!in_array($tableName, $allowedTables)) {
         return 0;
@@ -27,7 +30,7 @@ function countTableRows($tableName) {
 }
 
 $cursosCount = countTableRows("curso");
-$estudiantesCount = countTableRows("usuario");
+$profesoresCount = countTableRows("profesor");
 $evaluacionesCount = countTableRows("evaluacion");
 $entregasCount = countTableRows("entrega");
 
@@ -70,14 +73,15 @@ $nombre = getTeacherName($usuario);
             <div class="summary-card">
                 <span class="summary-icon"><i class="fa-solid fa-graduation-cap" style="color: var(--icon-color);"></i></span>
                 <div>
-                    <h3><?php echo $estudiantesCount; ?></h3>
-                    <p>Estudiantes registrados</p>
+                    <h3><?php echo $profesoresCount; ?></h3>
+                    <p>Profesores registrados</p>
                 </div>
             </div>
 
             
         </section>
-
+        <button href="https://sied.me/download/test.jpg" target="_blank"> Descargar IDE </button>
+    <!--
         <section class="dashboard-grid">
             <div class="dashboard-card large-card">
                 <h2>Principales funcionalidades</h2>
@@ -86,32 +90,32 @@ $nombre = getTeacherName($usuario);
                 <div class="quick-actions">
                     <a href="crearCurso.php" class="quick-action">
                         <span><i class="fa-solid fa-plus" style="color: var(--icon-color);"></i></span>
-                        Crear nuevo curso
+                        Crear Curso
                     </a>
 
                     <a href="cursos.php" class="quick-action">
                         <span><i class="fa-solid fa-book" style="color: var(--icon-color);"></i></span>
-                        Ver mis cursos
+                        Ver Cursos
                     </a>
 
                     <a href="estudiantes.php" class="quick-action">
                         <span><i class="fa-solid fa-users" style="color: var(--icon-color);"></i></span>
-                        Gestionar estudiantes
+                        Gestionar Estudiantes
                     </a>
 
                     <a href="evaluaciones.php" class="quick-action">
                         <span><i class="fa-solid fa-file-alt" style="color: var(--icon-color);"></i></span>
-                        Crear evaluación
+                        Crear Evaluación
                     </a>
 
                     <a href="entregas.php" class="quick-action">
                         <span><i class="fa-solid fa-file-arrow-up" style="color: var(--icon-color);"></i></span>
-                        Revisar entregas
+                        Ver Entregas
                     </a>
                 </div>
             </div>
 
-            <!-- <div class="dashboard-card">
+            <div class="dashboard-card">
                 <h2>Resumen del sistema</h2>
 
                 <div class="info-list">
@@ -135,8 +139,9 @@ $nombre = getTeacherName($usuario);
                         <span>Consulta de entregas realizadas por estudiantes.</span>
                     </div>
                 </div>
-            </div> -->
+            </div> 
         </section>
+-->
     </main>
 </div>
 

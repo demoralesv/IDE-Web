@@ -3,10 +3,11 @@
   --primary-color: #536d82;
   --extra2-color: #9db2bf;
   --extra1-color: #26374d;
-  --success-color: #85ac8d;
+  --success-color: #b3dfb3;
   --danger-color: #c20000;
-  --info-color: #17a2b8;
+  --info-color: #1bbdd6;
   --icon-color: #17a2b8;
+  --icon-color-hover: #24818f;
   --background-color: #dde6ed;
   --second-background-color: #f5f4f0;
 }
@@ -245,6 +246,14 @@ input.input-error {
   transition:
     background 0.2s,
     transform 0.2s;
+}
+
+.menu-group-text {
+  background-color: var(--icon-color-hover);
+  margin: 0%;
+  text-align: center;
+  border-width: 50px;
+  border-radius: 15%;
 }
 
 .menu-item:hover {
@@ -496,4 +505,81 @@ input.input-error {
 .page404-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 20px rgba(83, 109, 130, 0.4);
+}
+
+/* Cards de cursos */
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.course-card {
+  background: var(--background-color);
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
+}
+
+.course-info h3 {
+  
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.course-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.course-meta span {
+  background: var(--second-background-color);
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+.course-icon-button {
+  min-width: 44px;
+  height: 44px;
+  background: var(--icon-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+
+.course-icon-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 5px 18px rgba(83, 109, 130, 0.35);
+  background: var(--icon-color-hover);
+}
+
+.course-icon-button i {
+  font-size: 17px;
+}
+
+.empty-courses {
+  margin-top: 20px;
 }

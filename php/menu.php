@@ -1,8 +1,23 @@
 <?php
 $currentPage = basename($_SERVER["PHP_SELF"]);
+$teacherId = $_SESSION["ID"] ?? null;
 
+$courses = [];
+
+if ($teacherId !== null) {
+    $courses = getCoursesByTeacher($teacherId);
+}
 function isActive($page, $currentPage) {
     return $page === $currentPage ? "active" : "";
+}
+
+function isCourseActive($courseId) {
+    $currentPage = basename($_SERVER["PHP_SELF"]);
+    $currentCourseId = $_GET["id"] ?? null;
+
+    return $currentPage === "cursos.php" && (int)$currentCourseId === (int)$courseId
+        ? "active"
+        : "";
 }
 ?>
 
@@ -18,30 +33,33 @@ function isActive($page, $currentPage) {
             <span>Inicio</span>
         </a>
 
-        <a href="cursos.php" class="menu-item <?php echo isActive('cursos.php', $currentPage); ?>">
-            <span class="menu-icon"><i class="fa-solid fa-book" style="color: rgb(255, 255, 255);"></i></span>
-            <span>Mis cursos</span>
-        </a>
-
         <a href="crearCurso.php" class="menu-item <?php echo isActive('crearCurso.php', $currentPage); ?>">
             <span class="menu-icon"><i class="fa-solid fa-plus" style="color: rgb(255, 255, 255);"></i></span>
             <span>Crear curso</span>
         </a>
 
-        <a href="estudiantes.php" class="menu-item <?php echo isActive('estudiantes.php', $currentPage); ?>">
-            <span class="menu-icon"><i class="fa-solid fa-users" style="color: rgb(255, 255, 255);"></i></span>
-            <span>Estudiantes</span>
-        </a>
+        <?php foreach ($courses as $menucourses) { ?>
+            <a 
+                href="cursos.php?id=<?php echo urlencode($menucourses['ID']); ?>" 
+                class="menu-item <?php echo isCourseActive($menucourses['ID']); ?>"
+            >
+                <span class="menu-icon">
+                    <i class="fa-solid fa-chalkboard-user" style="color: rgb(255, 255, 255);"></i>
+                </span>
 
-        <a href="evaluaciones.php" class="menu-item <?php echo isActive('evaluaciones.php', $currentPage); ?>">
-            <span class="menu-icon"><i class="fa-solid fa-file-alt" style="color: rgb(255, 255, 255);"></i></span>
-            <span>Evaluaciones</span>
-        </a>
+                <span><?php echo htmlspecialchars($menucourses['nombre']); ?></span>
 
-        <a href="entregas.php" class="menu-item <?php echo isActive('entregas.php', $currentPage); ?>">
-            <span class="menu-icon"><i class="fa-solid fa-file-arrow-up" style="color: rgb(255, 255, 255);"></i></span>
-            <span>Entregas</span>
-        </a>
+                <div class="menu-group-text">
+                    <span><?php echo htmlspecialchars("Gr: " . $menucourses['grupo']); ?></span>
+                </div>
+            </a>
+        <?php } ?>
+        
+
+
+
+
+        
     </nav>
 
     <div class="sidebar-footer">

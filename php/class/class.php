@@ -2,91 +2,39 @@
 
 require_once __DIR__ . '/db_info.php';
 
-try {
-    $conn = new PDO(
-        "mysql:host=$servername;port=$dbPort;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $dbPassword
-    );
+require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/course.php';
+require_once __DIR__ . '/teacher.php';
 
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$database = new Database();
+$conn = $database->getConnection();
 
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
-}
+$auth = new Auth($conn);
+$teacherModel = new Teacher($conn);
+$courseModel = new Course($conn);
 
-// ***************************************************************************Login y signup
+// *************************************************************************** Funciones de profe
 
-function login($email, $userPassword) {
-    global $conn;
-
-    $stmt = $conn->prepare("SELECT * FROM usuario WHERE correo = :email");
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-
-    if ($stmt->rowCount() > 0) {
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (password_verify($userPassword, $user['password'])) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-function register($name, $lastname, $email, $userPassword) {
+function addCourse($name, $code, $group, $teacherId) {
     global $conn;
 
     try {
         $conn->beginTransaction();
 
-        $checkStmt = $conn->prepare("SELECT ID FROM usuario WHERE correo = :correo");
-        $checkStmt->execute([
-            ":correo" => $email
-        ]);
-
-        $existingUser = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($existingUser) {
-            $conn->rollBack();
-            return false;
-        }
-
-        $hashedPassword = password_hash($userPassword, PASSWORD_DEFAULT);
-
-        $idStmt = $conn->query("SELECT COALESCE(MAX(ID), 0) + 1 AS nextId FROM usuario");
-        $nextId = $idStmt->fetch(PDO::FETCH_ASSOC)["nextId"];
-
         $stmt = $conn->prepare("
-            INSERT INTO usuario (ID, nombre, apellido1, correo, password)
-            VALUES (:id, :nombre, :apellido1, :correo, :password)
+            INSERT INTO curso (nombre, codigo, grupo, profesorusuarioid)
+            VALUES (:nombre, :codigo, :grupo, :profesorusuarioid)
         ");
 
-        $userInserted = $stmt->execute([
-            ":id" => $nextId,
+        $courseInserted = $stmt->execute([
             ":nombre" => $name,
-            ":apellido1" => $lastname,
-            ":correo" => $email,
-            ":password" => $hashedPassword
+            ":codigo" => $code,
+            ":grupo" => $group,
+            ":profesorusuarioid" => $teacherId
         ]);
 
-        if (!$userInserted) {
-            $conn->rollBack();
-            return false;
-        }
-        //*********************************************************************Agregar el usuario recien creado como profesor */
-        $teacherStmt = $conn->prepare("
-            INSERT INTO profesor (ID)
-            VALUES (:id)
-        ");
-
-        $teacherInserted = $teacherStmt->execute([
-            ":id" => $nextId
-        ]);
-
-        if (!$teacherInserted) {
+        if (!$courseInserted) {
             $conn->rollBack();
             return false;
         }
@@ -99,15 +47,9 @@ function register($name, $lastname, $email, $userPassword) {
             $conn->rollBack();
         }
 
-        error_log("Error al crear usuario: " . $e->getMessage());
+        error_log("Error al crear curso: " . $e->getMessage());
         return false;
     }
-}
-
-// *************************************************************************** Funciones de profe
-
-function addCurse($name, $teacherId) {
-    // agregar logica para agregar un curso
 }
 
 function addEvaluation($name, $curseId) {
@@ -115,7 +57,13 @@ function addEvaluation($name, $curseId) {
 }
 
 function getCoursesByTeacher($teacherId) {
-    // agregar logica para obtener los cursos de un profe
+    global $conn;
+
+    $stmt = $conn->prepare("SELECT * FROM curso WHERE profesorusuarioid = :teacherId ORDER BY nombre ASC, grupo ASC" );
+    $stmt->bindParam(':teacherId', $teacherId);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function getEvaluationsByCourse($courseId) {
@@ -143,6 +91,21 @@ function getTeacherName($email) {
     if ($stmt->rowCount() > 0) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         return $user['nombre'] . " " . $user['apellido1'];
+    }
+
+    return null;
+}
+
+function getTeacherId($email) {
+    global $conn;
+
+    $stmt = $conn->prepare("SELECT ID FROM usuario WHERE correo = :email");
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user['ID'];
     }
 
     return null;
