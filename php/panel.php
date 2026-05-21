@@ -80,7 +80,7 @@ $nombre = getTeacherName($usuario);
 
             
         </section>
-        <button href="https://sied.me/download/test.jpg" target="_blank"> Descargar IDE </button>
+        <a href="/download/test.jpg" download="" target="_blank"> <button> <i class="fa-solid fa-download" style="color: white;"></i>  Descargar IDE </button> </a> 
     <!--
         <section class="dashboard-grid">
             <div class="dashboard-card large-card">
