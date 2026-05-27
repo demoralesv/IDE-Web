@@ -2,7 +2,6 @@
 session_start();
 
 require_once __DIR__ . '/class/class.php';
-
 $error = "";
 $success = false;
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -13,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (!preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/', $password)) {
         $error = "La contraseña debe contener al menos un número y una letra mayúscula y minúscula, y al menos 8 o más caracteres.";
-    } elseif (register($name, $lastname, $email, $password)) {
+    } elseif ($auth->register($name, $lastname, $email, $password)) {
         $success = true;
     } else {
         $error = "Error al registrar el usuario.";
