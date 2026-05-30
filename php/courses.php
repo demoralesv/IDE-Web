@@ -13,7 +13,7 @@ $usuario = $_SESSION["usuario"];
 $nombre = $backend->getTeacherName($usuario);
 $teacherId = $_SESSION["ID"] ?? null;
 
-$courseId = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+$courseId = filter_var($ID, FILTER_VALIDATE_INT);
 
 $selectedcourse = null;
 $students = [];
@@ -39,7 +39,7 @@ if ($teacherId === null) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cursos | SIED</title>
-    <link href="assets/styles/style.css" rel="stylesheet">
+    <link href="/assets/styles/style.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/b539121292.js" crossorigin="anonymous"></script>
 </head>
 

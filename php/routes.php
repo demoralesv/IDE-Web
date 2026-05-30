@@ -1,19 +1,37 @@
 <?php
+/*
+|--------------------------------------------------------------------------
+| Permitir archivos estáticos
+|--------------------------------------------------------------------------
+*/
 
+if (php_sapi_name() === 'cli-server') {
+
+    $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+
+    $file = __DIR__ . $path;
+
+    if (is_file($file)) {
+        return false;
+    }
+}
 require_once __DIR__.'/router.php';
 
-// ##################################################
-// ##################################################
-// ##################################################
-
-// Static GET
-// In the URL -> http://localhost
-// The output -> Index
 get('/', 'index.php');
+post('/', 'index.php');
 
-// Dynamic GET. Example with 1 variable
-// The $id will be available in user.php
 get('/panel', 'panel.php');
+
+get('/signup', 'signup.php');
+post('/signup', 'signup.php');
+
+get('/addCourse', 'createCourse.php');
+post('/addCourse', 'createCourse.php');
+
+get('/courses/$ID', 'courses.php');
+
+get('/logout', 'logout.php');
+
 
 // Dynamic GET. Example with 2 variables
 // The $name will be available in full_name.php
@@ -55,7 +73,18 @@ get('/callback/$name/$last_name', function($name, $last_name){
 // Route that will use POST data
 post('/user', '/api/save_user');
 
+// ##################################################
+// API STUDENTS
+// ##################################################
 
+// Register a student from the IDE
+post('/api/register', 'api/students/registerStudent.php');
+
+// Login of a student from the IDE, returns JWT token if successful
+post('/api/login', 'api/students/loginStudent.php');
+
+// Get the courses of a student, requires JWT token in Authorization header
+get('/api/courses', 'api/students/getStudentCourses.php');
 
 // ##################################################
 // ##################################################

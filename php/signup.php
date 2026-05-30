@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <script>
                 setTimeout(function() {
-                    window.location.href = "index.php";
+                    window.location.href = "/";
                 }, 2000);
             </script>
         <?php endif; ?>
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
 
         <?php if (!$success): ?>
-            <form method="POST" action="">
+            <form method="POST" action="/signup">
                 
                 <div class="form-group">
                     <label for="name">Nombre</label>
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </form>
 
             <div class="footer-links">
-                <a href="index.php">Cancelar</a>
+                <a href="/">Cancelar</a>
             </div>
         <?php endif; ?>
     </div>

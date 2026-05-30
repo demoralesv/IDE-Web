@@ -4,6 +4,7 @@ session_start();
 
 require_once __DIR__ . '/class/BackendFacade.php';
 
+
 $backend = new BackendFacade();
 
 $error = "";
@@ -16,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION["usuario"] = $email;
         $_SESSION["ID"] = $backend->getTeacherId($email);
 
-        header("Location: panel.php");
+        header("Location: /panel");
         exit;
     } else {
         $error = "Correo o contraseña incorrectos.";
@@ -30,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="assets/img/favicon.ico" rel="icon" type="image">
-    <link href="/assets/styles/style.css" rel="stylesheet">
+    <link href="assets/styles/style.css" rel="stylesheet">
     <title>Login | SIED</title>
 </head>
 <body class="auth-page">
@@ -49,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         
 
-        <form method="POST" action="" onsubmit="return validarFormulario(event)">
+        <form method="POST" action="/" onsubmit="return validarFormulario(event)">
             <div class="form-group">
                 <label for="email">Correo Electrónico</label>
                 <input type="email" id="email" name="email" title="Correo Electrónico" novalidate>
@@ -125,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </script>
 
         <div class="footer-links">
-            <a href="signup.php">Registrarse</a>
+            <a href="signup">Registrarse</a>
         </div>
     </div>
 </body>

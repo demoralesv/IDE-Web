@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
-    header("Location: index.php");
+    header("Location: /");
     exit;
 }
 
@@ -22,7 +22,7 @@ $entregasCount = $backend->countRows("entrega");
 $usuario = $_SESSION["usuario"];
 $nombre = $backend->getTeacherName($usuario);
 ?>
-
+<html>
 <!DOCTYPE html>
 <html lang="es">
 <head>
