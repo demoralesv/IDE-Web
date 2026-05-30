@@ -5,14 +5,16 @@ error_reporting(E_ALL);
 
 session_start();
 
-require_once __DIR__ . '/class/class.php';
+require_once __DIR__ . '/class/BackendFacade.php';
+
+$backend = new BackendFacade();
 
 $nombre = $_SESSION["usuario"] ?? "Docente";
 $teacherId = $_SESSION["ID"] ?? null;
 
 $courseId = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
-$course = null;
+$selectedcourse = null;
 $students = [];
 $tasks = [];
 $error = "";
@@ -22,13 +24,10 @@ if ($teacherId === null) {
 } elseif ($courseId === false || $courseId === null) {
     $error = "No se ha seleccionado ningún curso.";
 } else {
-    $selectedcourse = $courseModel->getCourseByIdAndTeacher($courseId, $teacherId);
+    $selectedcourse = $backend->getCourseByIdAndTeacher($courseId, $teacherId);
 
     if (!$selectedcourse) {
         $error = "El curso seleccionado no existe o no pertenece a este profesor.";
-    } else {
-        //$students = $courseModel->getStudentsByCourse($courseId);
-        //$tasks = $courseModel->getTasksByCourse($courseId);
     }
 }
 ?>
@@ -143,7 +142,7 @@ if ($teacherId === null) {
                         </a>
 
                         <a 
-                            href="evaluaciones.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
+                            href="assignments.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
                             class="quick-action"
                         >
                             <i class="fa-solid fa-clipboard-list"></i>
@@ -151,7 +150,7 @@ if ($teacherId === null) {
                         </a>
 
                         <a 
-                            href="entregas.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
+                            href="turnIn.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
                             class="quick-action"
                         >
                             <i class="fa-solid fa-folder-open"></i>

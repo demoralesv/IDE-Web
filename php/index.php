@@ -2,7 +2,9 @@
 
 session_start();
 
-require_once __DIR__ . '/class/class.php';
+require_once __DIR__ . '/class/BackendFacade.php';
+
+$backend = new BackendFacade();
 
 $error = "";
 
@@ -10,9 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
-    if ($auth->login($email, $password)) {
+    if ($backend->logSession($email, $password)) {
         $_SESSION["usuario"] = $email;
-        $_SESSION["ID"] = $teacherModel->getTeacherId($email);
+        $_SESSION["ID"] = $backend->getTeacherId($email);
 
         header("Location: panel.php");
         exit;

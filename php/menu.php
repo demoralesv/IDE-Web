@@ -4,9 +4,15 @@ $teacherId = $_SESSION["ID"] ?? null;
 
 $courses = [];
 
-if ($teacherId !== null) {
-    $courses = getCoursesByTeacher($teacherId);
+if (!isset($backend)) {
+    require_once __DIR__ . '/class/BackendFacade.php';
+    $backend = new BackendFacade();
 }
+
+if ($teacherId !== null) {
+    $courses = $backend->getCoursesByTeacher($teacherId);
+}
+
 function isActive($page, $currentPage) {
     return $page === $currentPage ? "active" : "";
 }
@@ -15,7 +21,7 @@ function isCourseActive($courseId) {
     $currentPage = basename($_SERVER["PHP_SELF"]);
     $currentCourseId = $_GET["id"] ?? null;
 
-    return $currentPage === "cursos.php" && (int)$currentCourseId === (int)$courseId
+    return $currentPage === "courses.php" && (int)$currentCourseId === (int)$courseId
         ? "active"
         : "";
 }
@@ -33,14 +39,14 @@ function isCourseActive($courseId) {
             <span>Inicio</span>
         </a>
 
-        <a href="crearCurso.php" class="menu-item <?php echo isActive('crearCurso.php', $currentPage); ?>">
+        <a href="createCourse.php" class="menu-item <?php echo isActive('createCourse.php', $currentPage); ?>">
             <span class="menu-icon"><i class="fa-solid fa-plus" style="color: rgb(255, 255, 255);"></i></span>
             <span>Crear curso</span>
         </a>
 
         <?php foreach ($courses as $menucourses) { ?>
             <a 
-                href="cursos.php?id=<?php echo urlencode($menucourses['ID']); ?>" 
+                href="courses.php?id=<?php echo urlencode($menucourses['ID']); ?>" 
                 class="menu-item <?php echo isCourseActive($menucourses['ID']); ?>"
             >
                 <span class="menu-icon">

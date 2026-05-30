@@ -2,6 +2,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
@@ -9,33 +10,17 @@ if (!isset($_SESSION["usuario"])) {
     exit;
 }
 
-require_once __DIR__ . '/class/class.php';
+require_once __DIR__ . '/class/BackendFacade.php';
 
-function countTableRows($tableName) {
-    global $conn;
+$backend = new BackendFacade();
 
-    $allowedTables = ["curso", "profesor", "evaluacion", "entrega"];
-
-    if (!in_array($tableName, $allowedTables)) {
-        return 0;
-    }
-
-    try {
-        $stmt = $conn->query("SELECT COUNT(*) AS total FROM $tableName");
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? (int)$result["total"] : 0;
-    } catch (PDOException $e) {
-        return 0;
-    }
-}
-
-$cursosCount = countTableRows("curso");
-$profesoresCount = countTableRows("profesor");
-$evaluacionesCount = countTableRows("evaluacion");
-$entregasCount = countTableRows("entrega");
+$cursosCount = $backend->countRows("curso");
+$profesoresCount = $backend->countRows("profesor");
+$evaluacionesCount = $backend->countRows("evaluacion");
+$entregasCount = $backend->countRows("entrega");
 
 $usuario = $_SESSION["usuario"];
-$nombre = getTeacherName($usuario);
+$nombre = $backend->getTeacherName($usuario);
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +78,7 @@ $nombre = getTeacherName($usuario);
                         Crear Curso
                     </a>
 
-                    <a href="cursos.php" class="quick-action">
+                    <a href="courses.php" class="quick-action">
                         <span><i class="fa-solid fa-book" style="color: var(--icon-color);"></i></span>
                         Ver Cursos
                     </a>
@@ -103,12 +88,12 @@ $nombre = getTeacherName($usuario);
                         Gestionar Estudiantes
                     </a>
 
-                    <a href="evaluaciones.php" class="quick-action">
+                    <a href="assignments.php" class="quick-action">
                         <span><i class="fa-solid fa-file-alt" style="color: var(--icon-color);"></i></span>
                         Crear Evaluación
                     </a>
 
-                    <a href="entregas.php" class="quick-action">
+                    <a href="turnIn.php" class="quick-action">
                         <span><i class="fa-solid fa-file-arrow-up" style="color: var(--icon-color);"></i></span>
                         Ver Entregas
                     </a>
