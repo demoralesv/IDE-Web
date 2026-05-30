@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="assets/img/favicon.ico" rel="icon" type="image">
-    <link href="assets/styles/style.css" rel="stylesheet">
+    <link href="/assets/styles/style.css" rel="stylesheet">
     <title>Login | SIED</title>
 </head>
 <body class="auth-page">
