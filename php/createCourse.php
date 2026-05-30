@@ -2,6 +2,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
@@ -9,9 +10,13 @@ if (!isset($_SESSION["usuario"])) {
     exit;
 }
 
-require_once __DIR__ . '/class/class.php';
+require_once __DIR__ . '/class/BackendFacade.php';
+
+$backend = new BackendFacade();
+
 $usuario = $_SESSION["usuario"];
-$nombre = getTeacherName($usuario);
+$nombre = $backend->getTeacherName($usuario);
+
 $success = "";
 $error = "";
 
@@ -27,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif ($teacherId === null) {
         $error = "No se pudo identificar al profesor.";
     } else {
-        if (addCourse($name, $code, $group, $teacherId)) {
+        if ($backend->addCourse($name, $code, $group, $teacherId)) {
             $success = "Curso creado correctamente.";
         } else {
             $error = "Ocurrió un error al crear el curso.";

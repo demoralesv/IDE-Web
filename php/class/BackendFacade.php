@@ -1,0 +1,83 @@
+<?php
+
+require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/Auth.php';
+require_once __DIR__ . '/Teacher.php';
+require_once __DIR__ . '/Course.php';
+require_once __DIR__ . '/UserService.php';
+
+class BackendFacade {
+    private Auth $auth;
+    private Teacher $teacher;
+    private Course $course;
+    private UserService $userService;
+
+    public function __construct() {
+        $database = new Database();
+        $conn = $database->getConnection();
+
+        $this->auth = new Auth($conn);
+        $this->teacher = new Teacher($conn);
+        $this->course = new Course($conn);
+        $this->userService = new UserService($conn);
+    }
+
+    public function registerUser(
+        string $nombre,
+        string $apellido,
+        string $correo,
+        string $password
+    ): array {
+        if (!preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/', $password)) {
+            return [
+                "success" => false,
+                "message" => "La contraseña debe contener al menos un número, una mayúscula, una minúscula y mínimo 8 caracteres."
+            ];
+        }
+
+        if ($this->auth->register($nombre, $apellido, $correo, $password)) {
+            return [
+                "success" => true,
+                "message" => "Usuario registrado exitosamente."
+            ];
+        }
+
+        return [
+            "success" => false,
+            "message" => "Error al registrar el usuario."
+        ];
+    }
+
+    public function logSession(string $correo, string $password): bool {
+        return $this->auth->login($correo, $password);
+    }
+
+    public function getTeacherId(string $correo): ?int {
+        return $this->teacher->getTeacherId($correo);
+    }
+
+    public function getTeacherName(string $correo): ?string {
+        return $this->teacher->getTeacherName($correo);
+    }
+
+    public function getCoursesByTeacher(int $teacherId): array {
+        return $this->course->getCoursesByTeacher($teacherId);
+    }
+
+    public function getCourseByIdAndTeacher(int $courseId, int $teacherId): ?array {
+        $course = $this->course->getCourseByIdAndTeacher($courseId, $teacherId);
+        return $course ?: null;
+    }
+
+    public function addCourse($name, $code, $group, $teacherId): bool {
+        return $this->course->addCourse($name, $code, $group, $teacherId);
+    }
+
+    public function countRows(string $tableName): int {
+        return $this->course->countRows($tableName);
+    }
+
+    public function obtainUsers(): array {
+        return $this->userService->obtainUsers();
+    }
+}

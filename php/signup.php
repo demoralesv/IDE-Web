@@ -1,21 +1,24 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/class/class.php';
+require_once __DIR__ . '/class/BackendFacade.php';
+
+$backend = new BackendFacade();
 $error = "";
 $success = false;
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST["name"] ?? "");
     $lastname = trim($_POST["lastname"] ?? "");
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
-    if (!preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/', $password)) {
-        $error = "La contraseña debe contener al menos un número y una letra mayúscula y minúscula, y al menos 8 o más caracteres.";
-    } elseif ($auth->register($name, $lastname, $email, $password)) {
+    $response = $backend->registerUser($name, $lastname, $email, $password);
+
+    if ($response["success"]) {
         $success = true;
     } else {
-        $error = "Error al registrar el usuario.";
+        $error = $response["message"];
     }
 }
 ?>
