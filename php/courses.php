@@ -9,7 +9,8 @@ require_once __DIR__ . '/class/BackendFacade.php';
 
 $backend = new BackendFacade();
 
-$nombre = $_SESSION["usuario"] ?? "Docente";
+$usuario = $_SESSION["usuario"];
+$nombre = $backend->getTeacherName($usuario);
 $teacherId = $_SESSION["ID"] ?? null;
 
 $courseId = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
