@@ -3,7 +3,7 @@
 require_once __DIR__ . '/db_info.php';
 
 require_once __DIR__ . '/database.php';
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/Auth.php';
 require_once __DIR__ . '/course.php';
 require_once __DIR__ . '/teacher.php';
 

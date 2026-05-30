@@ -2,23 +2,19 @@
 
 header("Content-Type: application/json; charset=UTF-8");
 
-require_once "../db.php";
-require_once "../auth.php";
+require_once __DIR__ . '/../tokenAuth.php';
+require_once __DIR__ . '/../../class/BackendFacade.php';
 
 validarToken();
 
 try {
-    $database = new ApiDatabase();
-    $connection = $database->connect();
+    $backend = new BackendFacade();
 
-    $query = "SELECT ID, nombre, correo FROM usuario";
-    $statement = $connection->prepare($query);
-    $statement->execute();
-
-    $usuarios = $statement->fetchAll();
+    $usuarios = $backend->obtainUsers();
 
     echo json_encode([
-        $usuarios
+        "success" => true,
+        "data" => $usuarios
     ]);
 
 } catch (Exception $e) {
