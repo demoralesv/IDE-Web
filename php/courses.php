@@ -15,20 +15,46 @@ $teacherId = $_SESSION["ID"] ?? null;
 
 $courseId = filter_var($ID, FILTER_VALIDATE_INT);
 
-$selectedcourse = null;
+$selectedCourse = null;
 $students = [];
+$statistics = [
+    "total_students" => 0,
+    "total_tasks" => 0,
+    "total_submissions" => 0
+];
 $tasks = [];
 $error = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "delete_course") {
+    if ($teacherId === null) {
+        $error = "No se pudo identificar al profesor de la sesión actual.";
+    } elseif ($courseId === false || $courseId === null) {
+        $error = "No se pudo identificar el curso a eliminar.";
+    } else {
+        if ($backend->deleteCourse((int) $courseId, (int) $teacherId)) {
+            header("Location: /panel");
+            exit;
+        } else {
+            $error = "No se pudo eliminar el curso. Verifique que no tenga datos asociados.";
+        }
+    }
+}
 
 if ($teacherId === null) {
     $error = "No se pudo identificar al profesor de la sesión actual.";
 } elseif ($courseId === false || $courseId === null) {
     $error = "No se ha seleccionado ningún curso.";
 } else {
-    $selectedcourse = $backend->getCourseByIdAndTeacher($courseId, $teacherId);
+    $selectedCourse = $backend->getCourseByIdAndTeacher($courseId, $teacherId);
 
-    if (!$selectedcourse) {
+    
+
+    if (!$selectedCourse) {
         $error = "El curso seleccionado no existe o no pertenece a este profesor.";
+    } else {
+        $statistics = $backend->getCourseStatistics($courseId);
+        $students = $backend->getStudentsByCourse($courseId);
+
     }
 }
 ?>
@@ -67,12 +93,18 @@ if ($teacherId === null) {
 
         <?php } else { ?>
 
-            <section class="topbar">
-                <h1><?php echo htmlspecialchars($selectedcourse["nombre"]); ?></h1>
-                <p>
-                    Código: <?php echo htmlspecialchars($selectedcourse["codigo"]); ?> |
-                    Grupo: <?php echo htmlspecialchars($selectedcourse["grupo"]); ?>
-                </p>
+            <section class="topbar course-topbar">
+                <div>
+                    <h1><?php echo htmlspecialchars($selectedCourse["nombre"]); ?></h1>
+                    <p>
+                        Código: <?php echo htmlspecialchars($selectedCourse["codigo"]); ?> |
+                        Grupo: <?php echo htmlspecialchars($selectedCourse["grupo"]); ?>
+                    </p>
+                </div>
+
+                <button type="button" class="delete-course-button" onclick="openDeleteCourseModal()">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
             </section>
 
             <section class="dashboard-summary">
@@ -82,7 +114,7 @@ if ($teacherId === null) {
                         <i class="fa-solid fa-users"></i>
                     </div>
                     <div>
-                        <h3><?php echo count($students); ?></h3>
+                        <h3><?php echo htmlspecialchars($statistics["total_students"]); ?></h3>
                         <p>Estudiantes</p>
                     </div>
                 </div>
@@ -92,17 +124,7 @@ if ($teacherId === null) {
                         <i class="fa-solid fa-list-check"></i>
                     </div>
                     <div>
-                        <h3><?php echo count($tasks); ?></h3>
-                        <p>Tareas</p>
-                    </div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="summary-icon">
-                        <i class="fa-solid fa-file-lines"></i>
-                    </div>
-                    <div>
-                        <h3>0</h3>
+                        <h3><?php echo htmlspecialchars($statistics["total_tasks"]); ?></h3>
                         <p>Evaluaciones</p>
                     </div>
                 </div>
@@ -112,7 +134,7 @@ if ($teacherId === null) {
                         <i class="fa-solid fa-inbox"></i>
                     </div>
                     <div>
-                        <h3>0</h3>
+                        <h3><?php echo htmlspecialchars($statistics["total_submissions"]); ?></h3>
                         <p>Entregas</p>
                     </div>
                 </div>
@@ -128,7 +150,7 @@ if ($teacherId === null) {
                     <div class="quick-actions">
 
                         <a 
-                            href="agregarEstudiantes.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
+                            href="agregarEstudiantes.php?cursoId=<?php echo urlencode($selectedCourse["ID"]); ?>" 
                             class="quick-action"
                         >
                             <i class="fa-solid fa-user-plus"></i>
@@ -136,7 +158,7 @@ if ($teacherId === null) {
                         </a>
 
                         <a 
-                            href="crearTarea.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
+                            href="crearTarea.php?cursoId=<?php echo urlencode($selectedCourse["ID"]); ?>" 
                             class="quick-action"
                         >
                             <i class="fa-solid fa-plus"></i>
@@ -144,7 +166,7 @@ if ($teacherId === null) {
                         </a>
 
                         <a 
-                            href="assignments.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
+                            href="assignments.php?cursoId=<?php echo urlencode($selectedCourse ["ID"]); ?>" 
                             class="quick-action"
                         >
                             <i class="fa-solid fa-clipboard-list"></i>
@@ -152,7 +174,7 @@ if ($teacherId === null) {
                         </a>
 
                         <a 
-                            href="turnIn.php?cursoId=<?php echo urlencode($selectedcourse["ID"]); ?>" 
+                            href="turnIn.php?cursoId=<?php echo urlencode($selectedCourse ["ID"]); ?>" 
                             class="quick-action"
                         >
                             <i class="fa-solid fa-folder-open"></i>
@@ -164,7 +186,7 @@ if ($teacherId === null) {
 
                 <div class="dashboard-card">
                     <h2>Estudiantes</h2>
-                    <p>Estudiantes asociados a este curso.</p>
+                    <p>Estudiantes matriculados en este curso.</p>
 
                     <?php if (empty($students)) { ?>
 
@@ -233,6 +255,59 @@ if ($teacherId === null) {
     </main>
 
 </div>
+    <div id="deleteCourseModal" class="modal-overlay">
+        <div class="modal danger">
+            <div class="modal-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
 
+            <h2>Eliminar curso</h2>
+
+            <p>
+                ¿Está seguro de que desea eliminar el curso
+                <strong><?php echo htmlspecialchars($selectedCourse["nombre"] ?? ""); ?></strong>?
+            </p>
+
+            <p class="modal-highlight">
+                Esta acción no se puede deshacer.
+            </p>
+
+            <form 
+                method="POST" 
+                action="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/delete"
+                class="modal-actions"
+            >
+                <input type="hidden" name="action" value="delete_course">
+
+                <button 
+                    type="button" 
+                    class="modal-cancel-button" 
+                    onclick="closeModal('deleteCourseModal')"
+                >
+                    Cancelar
+                </button>
+
+                <button type="submit" class="modal-delete-button">
+                    Sí, eliminar
+                </button>
+            </form>
+        </div>
+</div>
+
+    <script>
+        function openDeleteCourseModal() {
+            document.getElementById("deleteCourseModal").classList.add("show");
+        }
+
+        function closeDeleteCourseModal() {
+            document.getElementById("deleteCourseModal").classList.remove("show");
+        }
+
+        document.getElementById("deleteCourseModal").addEventListener("click", function(event) {
+            if (event.target === this) {
+                closeDeleteCourseModal();
+            }
+        });
+    </script>
 </body>
 </html>

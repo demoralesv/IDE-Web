@@ -599,3 +599,140 @@ input.input-error {
 .empty-courses {
   margin-top: 20px;
 }
+
+/* Botón eliminar curso */
+
+.course-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.delete-course-button {
+  width: 46px;
+  height: 46px;
+  margin-top: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: #fee;
+  color: var(--danger-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.delete-course-button:hover {
+  background: var(--danger-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px rgba(194, 0, 0, 0.25);
+}
+/* Modal reutilizable */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 55, 77, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  width: 100%;
+  max-width: 430px;
+  background: var(--second-background-color);
+  border-radius: 18px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.modal-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.modal h2 {
+  color: var(--extra1-color);
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.modal p {
+  color: #555;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Variante éxito */
+
+.modal.success .modal-icon {
+  background: #efe;
+  color: #155724;
+}
+
+.modal.success .modal-highlight {
+  color: #155724;
+  font-weight: 600;
+}
+
+/* Variante peligro */
+
+.modal.danger .modal-icon {
+  background: #fee;
+  color: var(--danger-color);
+}
+
+.modal.danger .modal-highlight {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+
+/* Botones del modal */
+
+.modal-cancel-button,
+.modal-confirm-button,
+.modal-delete-button {
+  margin-top: 0;
+}
+
+.modal-cancel-button {
+  background: var(--background-color);
+  color: var(--extra1-color);
+}
+
+.modal-confirm-button {
+  background: var(--primary-color);
+  color: white;
+}
+
+.modal-delete-button {
+  background: var(--danger-color);
+  color: white;
+}
+
+.modal-delete-button:hover {
+  box-shadow: 0 5px 18px rgba(194, 0, 0, 0.3);
+}

@@ -5,7 +5,7 @@ require_once __DIR__ . '/class/BackendFacade.php';
 
 $backend = new BackendFacade();
 $error = "";
-$success = false;
+$success = true;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST["name"] ?? "");
@@ -39,14 +39,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
 
         <?php if ($success): ?>
-            <div class="success-message">
-                <p>Usuario registrado exitosamente. Redirigiendo...</p>
+            <div id="successSignupModal" class="modal-overlay show">
+                <div class="modal success">
+                    <div class="modal-icon">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+
+                    <h2>Registro exitoso</h2>
+
+                    <p class="modal-highlight">
+                        Usuario registrado correctamente.
+                    </p>
+
+                    <p>Redirigiendo al inicio de sesión...</p>
+                </div>
             </div>
 
             <script>
-                setTimeout(function() {
-                    window.location.href = "/";
-                }, 2000);
+                
             </script>
         <?php endif; ?>
 
@@ -126,6 +136,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 passwordError.style.display = "none";
                 passwordInput.classList.remove("input-error");
             }
+        });
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add("show");
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove("show");
+        }
+
+        document.querySelectorAll(".modal-overlay").forEach(function(modal) {
+            modal.addEventListener("click", function(event) {
+                if (event.target === this) {
+                    this.classList.remove("show");
+                }
+            });
         });
     </script>
 </body>

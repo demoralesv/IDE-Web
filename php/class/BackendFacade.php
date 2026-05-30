@@ -77,7 +77,21 @@ class BackendFacade {
         return $this->course->countRows($tableName);
     }
 
+    public function getCourseStatistics(int $courseId): array {
+        return $this->course->getCourseStatistics($courseId);
+    }
+
+    public function getStudentsByCourse(int $courseId): array {
+        return $this->course->getStudentsByCourse($courseId);
+    }
+
+    public function deleteCourse(int $courseId, int $teacherId): bool {
+        return $this->course->deleteCourse($courseId, $teacherId);
+    }
+
+
     public function obtainUsers(): array {
         return $this->userService->obtainUsers();
     }
+
 }

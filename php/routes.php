@@ -29,6 +29,7 @@ get('/addCourse', 'createCourse.php');
 post('/addCourse', 'createCourse.php');
 
 get('/courses/$ID', 'courses.php');
+post('/courses/$ID/delete', 'courses.php');
 
 get('/logout', 'logout.php');
 
