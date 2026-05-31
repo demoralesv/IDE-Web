@@ -552,7 +552,6 @@ input.input-error {
 }
 
 .course-info h3 {
-  
   font-size: 20px;
   margin-bottom: 8px;
 }
@@ -735,4 +734,25 @@ input.input-error {
 
 .modal-delete-button:hover {
   box-shadow: 0 5px 18px rgba(194, 0, 0, 0.3);
+}
+
+/* Tabla de agregar estudiantes */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.data-table th,
+.data-table td {
+  padding: 16px 20px;
+  text-align: left;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #f6f8fc;
+}
+
+.data-table tbody tr:hover {
+  background-color: #eef3ff;
 }

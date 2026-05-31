@@ -31,6 +31,9 @@ post('/addCourse', 'createCourse.php');
 get('/courses/$ID', 'courses.php');
 post('/courses/$ID/delete', 'courses.php');
 
+get('/courses/$ID/students/add', 'addStudents.php');
+post('/courses/$ID/students/add', 'addStudents.php');
+
 get('/logout', 'logout.php');
 
 

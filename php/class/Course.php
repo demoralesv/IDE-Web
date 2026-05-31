@@ -187,5 +187,56 @@ class Course {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getStudentsNotInCourse(int $courseId, string $search = ""): array {
+        $searchTerm = "%" . $search . "%";
+
+        $stmt = $this->conn->prepare("
+            SELECT 
+                u.ID,
+                u.apellido1,
+                u.nombre,
+                u.correo
+            FROM estudiante e
+            INNER JOIN usuario u ON u.ID = e.ID
+            WHERE e.ID NOT IN (
+                SELECT estudianteusuarioID
+                FROM estudiante_curso
+                WHERE cursoID = :courseId
+            )
+            AND (
+                u.nombre LIKE :searchName
+                OR u.apellido1 LIKE :searchLastName
+                OR u.correo LIKE :searchEmail
+            )
+            ORDER BY u.apellido1 ASC, u.nombre ASC
+        ");
+
+        $stmt->execute([
+            ":courseId" => $courseId,
+            ":searchName" => $searchTerm,
+            ":searchLastName" => $searchTerm,
+            ":searchEmail" => $searchTerm
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function addStudentToCourse(int $courseId, int $studentId): bool {
+        try {
+            $stmt = $this->conn->prepare("
+                INSERT INTO estudiante_curso (cursoID, estudianteusuarioID)
+                VALUES (:courseId, :studentId)
+            ");
+
+            return $stmt->execute([
+                ":courseId" => $courseId,
+                ":studentId" => $studentId
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error al agregar estudiante al curso: " . $e->getMessage());
+            return false;
+        }
+    }
 
 }

@@ -52,7 +52,7 @@ class BackendFacade {
         return $course ?: null;
     }
 
-    public function addCourse($name, $code, $group, $teacherId): bool {
+    public function addCourse(string $name, int $code, int $group, int $teacherId): bool {
         return $this->course->addCourse($name, $code, $group, $teacherId);
     }
 
@@ -72,9 +72,16 @@ class BackendFacade {
         return $this->course->deleteCourse($courseId, $teacherId);
     }
 
-
     public function obtainUsers(): array {
         return $this->userService->obtainUsers();
+    }
+
+    public function getStudentsNotInCourse(int $courseId, string $search = ""): array {
+        return $this->course->getStudentsNotInCourse($courseId, $search);
+    }
+
+    public function addStudentToCourse(int $courseId, int $studentId): bool {
+        return $this->course->addStudentToCourse($courseId, $studentId);
     }
 
 }

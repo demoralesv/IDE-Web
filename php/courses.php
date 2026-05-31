@@ -150,7 +150,7 @@ if ($teacherId === null) {
                     <div class="quick-actions">
 
                         <a 
-                            href="agregarEstudiantes.php?cursoId=<?php echo urlencode($selectedCourse["ID"]); ?>" 
+                            href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/students/add"
                             class="quick-action"
                         >
                             <i class="fa-solid fa-user-plus"></i>
