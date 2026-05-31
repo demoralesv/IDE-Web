@@ -28,24 +28,7 @@ class BackendFacade {
         string $correo,
         string $password
     ): array {
-        if (!preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/', $password)) {
-            return [
-                "success" => false,
-                "message" => "La contraseña debe contener al menos un número, una mayúscula, una minúscula y mínimo 8 caracteres."
-            ];
-        }
-
-        if ($this->auth->register($nombre, $apellido, $correo, $password)) {
-            return [
-                "success" => true,
-                "message" => "Usuario registrado exitosamente."
-            ];
-        }
-
-        return [
-            "success" => false,
-            "message" => "Error al registrar el usuario."
-        ];
+        return $this->auth->registerUser($nombre, $apellido, $correo, $password);
     }
 
     public function logSession(string $correo, string $password): bool {

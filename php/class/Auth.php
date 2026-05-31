@@ -25,6 +25,24 @@ class Auth {
 
         return false;
     }
+    
+    public function registerUser($name, $lastname, $email, $userPassword): array {
+        if (!preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/', $userPassword)) {
+            return [
+                "success" => false,
+                "message" => "La contraseña debe contener al menos un número, una mayúscula, una minúscula y mínimo 8 caracteres."
+            ];
+        }
+
+        $registered = $this->register($name, $lastname, $email, $userPassword);
+
+        return [
+            "success" => $registered,
+            "message" => $registered
+                ? "Usuario registrado exitosamente."
+                : "Error al registrar el usuario."
+        ];
+    }
 
     public function register($name, $lastname, $email, $userPassword) {
         try {

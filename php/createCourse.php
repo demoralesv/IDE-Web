@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
             <?php } ?>
 
-            <form method="POST" action="">
+            <form method="POST" action="/addCourse">
 
                 <div class="form-group">
                     <label for="name">Nombre del curso</label>

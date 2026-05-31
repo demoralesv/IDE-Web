@@ -5,7 +5,7 @@ require_once __DIR__ . '/class/BackendFacade.php';
 
 $backend = new BackendFacade();
 $error = "";
-$success = true;
+$success = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST["name"] ?? "");
@@ -56,7 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
             <script>
-                
+                setTimeout(function() {
+                    window.location.href = "/";
+                }, 2000);
             </script>
         <?php endif; ?>
 
