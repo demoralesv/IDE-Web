@@ -7,7 +7,7 @@ class Student {
         $this->conn = $conn;
     }
 
-    public function registerStudent($name, $lastname, $email, $userPassword) {
+        public function registerStudent($name, $lastname, $email, $passwordHashFromIde) {
         try {
             $this->conn->beginTransaction();
 
@@ -29,7 +29,8 @@ class Student {
                 return false;
             }
 
-            $hashedPassword = password_hash($userPassword, PASSWORD_DEFAULT);
+            
+            $securePasswordHash = password_hash($passwordHashFromIde, PASSWORD_DEFAULT);
 
             $userStmt = $this->conn->prepare("
                 INSERT INTO usuario (nombre, apellido1, correo, password)
@@ -40,7 +41,7 @@ class Student {
                 ":nombre" => $name,
                 ":apellido1" => $lastname,
                 ":correo" => $email,
-                ":password" => $hashedPassword
+                ":password" => $securePasswordHash
             ]);
 
             if (!$userInserted) {
@@ -100,7 +101,7 @@ class Student {
         }
     }
 
-    public function loginStudent($email, $userPassword) {
+    public function loginStudent($email, $passwordHashFromIde) {
         $stmt = $this->conn->prepare("
             SELECT 
                 u.ID,
@@ -127,7 +128,7 @@ class Student {
             return false;
         }
 
-        if (!password_verify($userPassword, $student["password"])) {
+        if (!password_verify($passwordHashFromIde, $student["password"])) {
             return false;
         }
 

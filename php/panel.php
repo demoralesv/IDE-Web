@@ -13,11 +13,17 @@ if (!isset($_SESSION["usuario"])) {
 require_once __DIR__ . '/class/BackendFacade.php';
 
 $backend = new BackendFacade();
+$teacherId = $_SESSION["ID"] ?? null;
 
-$cursosCount = $backend->countRows("curso");
-$profesoresCount = $backend->countRows("profesor");
-$evaluacionesCount = $backend->countRows("evaluacion");
-$entregasCount = $backend->countRows("entrega");
+$statistics = [
+    "total_courses" => 0,
+    "total_evaluations" => 0,
+    "total_submissions" => 0
+];
+
+if ($teacherId !== null) {
+    $statistics = $backend->getTeacherStatistics((int) $teacherId);
+}
 
 $usuario = $_SESSION["usuario"];
 $nombre = $backend->getTeacherName($usuario);
@@ -50,83 +56,27 @@ $nombre = $backend->getTeacherName($usuario);
             <div class="summary-card">
                 <span class="summary-icon"><i class="fa-solid fa-chalkboard-user" style="color: var(--icon-color);"></i></span>
                 <div>
-                    <h3><?php echo $cursosCount; ?></h3>
-                    <p>Cursos registrados</p>
+                    <h3><?php echo htmlspecialchars($statistics["total_courses"]); ?></h3>
+                    <p>Cursos</p>
                 </div>
             </div>
-
             <div class="summary-card">
-                <span class="summary-icon"><i class="fa-solid fa-graduation-cap" style="color: var(--icon-color);"></i></span>
+                <span class="summary-icon"><i class="fa-regular fa-file-lines" style="color: var(--icon-color);"></i></span>
                 <div>
-                    <h3><?php echo $profesoresCount; ?></h3>
-                    <p>Profesores registrados</p>
+                    <h3><?php echo htmlspecialchars($statistics["total_evaluations"]); ?></h3>
+                    <p>Evaluaciones</p>
                 </div>
             </div>
-
-            
+            <div class="summary-card">
+                <span class="summary-icon"><i class="fa-regular fa-file-zipper" style="color: var(--icon-color);"></i></span>
+                <div>
+                    <h3><?php echo htmlspecialchars($statistics["total_submissions"]); ?></h3>
+                    <p>Entregas</p>
+                </div>
+            </div>
         </section>
         <a href="/download/test.jpg" download="" target="_blank"> <button> <i class="fa-solid fa-download" style="color: white;"></i>  Descargar IDE </button> </a> 
-    <!--
-        <section class="dashboard-grid">
-            <div class="dashboard-card large-card">
-                <h2>Principales funcionalidades</h2>
-             
 
-                <div class="quick-actions">
-                    <a href="crearCurso.php" class="quick-action">
-                        <span><i class="fa-solid fa-plus" style="color: var(--icon-color);"></i></span>
-                        Crear Curso
-                    </a>
-
-                    <a href="courses.php" class="quick-action">
-                        <span><i class="fa-solid fa-book" style="color: var(--icon-color);"></i></span>
-                        Ver Cursos
-                    </a>
-
-                    <a href="estudiantes.php" class="quick-action">
-                        <span><i class="fa-solid fa-users" style="color: var(--icon-color);"></i></span>
-                        Gestionar Estudiantes
-                    </a>
-
-                    <a href="assignments.php" class="quick-action">
-                        <span><i class="fa-solid fa-file-alt" style="color: var(--icon-color);"></i></span>
-                        Crear Evaluación
-                    </a>
-
-                    <a href="turnIn.php" class="quick-action">
-                        <span><i class="fa-solid fa-file-arrow-up" style="color: var(--icon-color);"></i></span>
-                        Ver Entregas
-                    </a>
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h2>Resumen del sistema</h2>
-
-                <div class="info-list">
-                    <div class="info-item">
-                        <strong>Cursos</strong>
-                        <span>Creación y administración de cursos.</span>
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Estudiantes</strong>
-                        <span>Asignación de estudiantes a cursos.</span>
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Evaluaciones</strong>
-                        <span>Creación de tareas, proyectos o pruebas.</span>
-                    </div>
-
-                    <div class="info-item">
-                        <strong>Entregas</strong>
-                        <span>Consulta de entregas realizadas por estudiantes.</span>
-                    </div>
-                </div>
-            </div> 
-        </section>
--->
     </main>
 </div>
 

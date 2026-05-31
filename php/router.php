@@ -1,20 +1,5 @@
 <?php
-/*
-|--------------------------------------------------------------------------
-| Permitir archivos estáticos
-|--------------------------------------------------------------------------
-*/
 
-if (php_sapi_name() === 'cli-server') {
-
-    $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-
-    $file = __DIR__ . $path;
-
-    if (is_file($file)) {
-        return false;
-    }
-}
 function get($route, $path_to_include)
 {
 	if ($_SERVER['REQUEST_METHOD'] == 'GET') {

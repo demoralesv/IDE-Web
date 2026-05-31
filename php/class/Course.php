@@ -78,21 +78,7 @@ class Course {
         }
     }
 
-    public function countRows(string $tableName): int {
-        $allowedTables = ["curso", "profesor", "evaluacion", "entrega"];
-
-        if (!in_array($tableName, $allowedTables)) {
-            return 0;
-        }
-
-        try {
-            $stmt = $this->conn->query("SELECT COUNT(*) AS total FROM $tableName");
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result ? (int)$result["total"] : 0;
-        } catch (PDOException $e) {
-            return 0;
-        }
-    }
+    
 
     public function deleteCourse($courseId, $teacherId): bool {
         try {

@@ -9,13 +9,13 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $input = json_decode(file_get_contents("php://input"), true);
 
 $email = trim($input["correo"] ?? "");
-$password = $input["password"] ?? "";
+$passwordHashFromIde = $input["password"] ?? "";
 
-if ($email === "" || $password === "") {
+if ($email === "" || $passwordHashFromIde === "") {
     ApiResponse::error("Debe ingresar correo y contraseña.");
 }
 
-$student = $studentService->loginStudent($email, $password);
+$student = $studentService->loginStudent($email, $passwordHashFromIde);
 
 if (!$student) {
     ApiResponse::error("Correo o contraseña incorrectos, o el usuario no es estudiante.", 401);

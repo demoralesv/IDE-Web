@@ -56,8 +56,8 @@ class BackendFacade {
         return $this->course->addCourse($name, $code, $group, $teacherId);
     }
 
-    public function countRows(string $tableName): int {
-        return $this->course->countRows($tableName);
+    public function getTeacherStatistics(int $teacherId): array {
+        return $this->teacher->getTeacherStatistics($teacherId);
     }
 
     public function getCourseStatistics(int $courseId): array {

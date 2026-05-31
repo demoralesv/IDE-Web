@@ -161,7 +161,7 @@ if ($teacherId === null) {
                             href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/assignments/create"
                             class="quick-action"
                         >
-                            <i class="fa-solid fa-plus"></i>
+                            <i class="fa-solid fa-file-circle-plus"></i>
                             Crear tarea
                         </a>
 
@@ -169,7 +169,7 @@ if ($teacherId === null) {
                             href="assignments.php?cursoId=<?php echo urlencode($selectedCourse ["ID"]); ?>" 
                             class="quick-action"
                         >
-                            <i class="fa-solid fa-clipboard-list"></i>
+                            <i class="fa-solid fa-file-lines"></i>
                             Evaluaciones
                         </a>
 
