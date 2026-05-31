@@ -110,7 +110,16 @@ if ($teacherId === null) {
                             placeholder="Ej: /download/tarea1.pdf o https://..."
                         >
                     </div>
-
+                    <div class="form-group">
+                        <label for="dueDate">Fecha de entrega</label>
+                        <input 
+                            type="date" 
+                            id="dueDate" 
+                            name="dueDate"
+                            min="<?php echo date('Y-m-d'); ?>"
+                            required
+                        >
+                    </div>
                     <button type="submit">
                         <i class="fa-solid fa-plus"></i>
                         Crear tarea
