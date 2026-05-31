@@ -158,7 +158,7 @@ if ($teacherId === null) {
                         </a>
 
                         <a 
-                            href="crearTarea.php?cursoId=<?php echo urlencode($selectedCourse["ID"]); ?>" 
+                            href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/assignments/create"
                             class="quick-action"
                         >
                             <i class="fa-solid fa-plus"></i>
