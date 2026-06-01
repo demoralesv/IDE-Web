@@ -33,4 +33,25 @@ class Assignment {
             return false;
         }
     }
+
+    public function getAssignmentsByCourse(int $courseId): array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                ID,
+                titulo,
+                descripcion,
+                adjunto,
+                fechaentrega,
+                cursoid
+            FROM evaluacion
+            WHERE cursoid = :courseId
+            ORDER BY fechaentrega DESC
+        ");
+
+        $stmt->execute([
+            ":courseId" => $courseId
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

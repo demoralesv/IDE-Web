@@ -102,4 +102,8 @@ class BackendFacade {
         );
     }
 
+    public function getAssignmentsByCourse(int $courseId): array {
+        return $this->assignment->getAssignmentsByCourse($courseId);
+    }
+
 }

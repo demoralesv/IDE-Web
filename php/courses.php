@@ -54,6 +54,7 @@ if ($teacherId === null) {
     } else {
         $statistics = $backend->getCourseStatistics($courseId);
         $students = $backend->getStudentsByCourse($courseId);
+        $tasks = $backend->getAssignmentsByCourse($courseId);
 
     }
 }
@@ -141,52 +142,31 @@ if ($teacherId === null) {
 
             </section>
 
-            <section class="dashboard-grid">
+            <section class="course-content-grid">
 
-                <div class="dashboard-card">
-                    <h2>Administrar curso</h2>
-                    <p>Seleccione una acción para gestionar este curso.</p>
-
-                    <div class="quick-actions">
+                <section class="dashboard-card course-students-card">
+                    <div class="card-header-row">
+                        <div>
+                            <h2>Estudiantes</h2>
+                            <p>Estudiantes matriculados en este curso.</p>
+                        </div>
 
                         <a 
                             href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/students/add"
-                            class="quick-action"
+                            class="circle-action-button"
+                            title="Agregar estudiantes"
                         >
-                            <i class="fa-solid fa-user-plus"></i>
-                            Agregar estudiantes
+                            <i class="fa-solid fa-plus"></i>
                         </a>
-
-                        <a 
-                            href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/assignments/create"
-                            class="quick-action"
-                        >
-                            <i class="fa-solid fa-file-circle-plus"></i>
-                            Crear tarea
-                        </a>
-
-                        <a 
-                            href="assignments.php?cursoId=<?php echo urlencode($selectedCourse ["ID"]); ?>" 
-                            class="quick-action"
-                        >
-                            <i class="fa-solid fa-file-lines"></i>
-                            Evaluaciones
-                        </a>
-
-                        <a 
-                            href="turnIn.php?cursoId=<?php echo urlencode($selectedCourse ["ID"]); ?>" 
-                            class="quick-action"
-                        >
-                            <i class="fa-solid fa-folder-open"></i>
-                            Ver entregas
-                        </a>
-
                     </div>
-                </div>
 
-                <div class="dashboard-card">
-                    <h2>Estudiantes</h2>
-                    <p>Estudiantes matriculados en este curso.</p>
+                    <input 
+                        type="text" 
+                        id="studentSearch" 
+                        class="list-search-input"
+                        placeholder="Buscar estudiante..."
+                        onkeyup="filterList('studentSearch', 'studentsList')"
+                    >
 
                     <?php if (empty($students)) { ?>
 
@@ -196,57 +176,77 @@ if ($teacherId === null) {
 
                     <?php } else { ?>
 
-                        <div class="info-list">
+                        <div id="studentsList" class="compact-list paginated-list" data-page-size="5">
                             <?php foreach ($students as $student) { ?>
-                                <div class="info-item">
+                                <div class="compact-list-item">
                                     <strong>
-                                        <?php 
-                                            echo htmlspecialchars(
-                                                $student["nombre"] . " " . $student["apellido1"]
-                                            ); 
-                                        ?>
+                                        <?php echo htmlspecialchars($student["apellido1"] . ", " . $student["nombre"]); ?>
                                     </strong>
-                                    <span>
-                                        <?php echo htmlspecialchars($student["correo"]); ?>
-                                    </span>
+                                    <span><?php echo htmlspecialchars($student["correo"]); ?></span>
                                 </div>
                             <?php } ?>
                         </div>
 
+                        <div class="pagination-controls" data-list="studentsList"></div>
+
                     <?php } ?>
+                </section>
 
-                </div>
+                <section class="dashboard-card course-tasks-card">
+                    <div class="card-header-row">
+                        <div>
+                            <h2>Tareas del curso</h2>
+                            <p>Listado de tareas creadas para este curso.</p>
+                        </div>
 
-            </section>
-
-            <section class="dashboard-card" style="margin-top: 24px;">
-                <h2>Tareas del curso</h2>
-                <p>Listado de tareas creadas para este curso.</p>
-
-                <?php if (empty($tasks)) { ?>
-
-                    <div class="message error">
-                        Este curso todavía no tiene tareas registradas.
+                        <a 
+                            href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/assignments/create"
+                            class="circle-action-button"
+                            title="Crear tarea"
+                        >
+                            <i class="fa-solid fa-plus"></i>
+                        </a>
                     </div>
 
-                <?php } else { ?>
+                    <input 
+                        type="text" 
+                        id="taskSearch" 
+                        class="list-search-input"
+                        placeholder="Buscar tarea..."
+                        onkeyup="filterList('taskSearch', 'tasksList')"
+                    >
 
-                    <div class="info-list">
-                        <?php foreach ($tasks as $task) { ?>
-                            <div class="info-item">
-                                <strong>
-                                    <?php echo htmlspecialchars($task["nombre"]); ?>
-                                </strong>
+                    <?php if (empty($tasks)) { ?>
 
-                                <span>
-                                    Fecha de entrega:
-                                    <?php echo htmlspecialchars($task["fechaentrega"]); ?>
-                                </span>
-                            </div>
-                        <?php } ?>
-                    </div>
+                        <div class="message error">
+                            Este curso todavía no tiene tareas registradas.
+                        </div>
 
-                <?php } ?>
+                    <?php } else { ?>
+
+                        <div id="tasksList" class="task-list paginated-list" data-page-size="5">
+                            <?php foreach ($tasks as $task) { ?>
+                                <a 
+                                    href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/assignments/<?php echo urlencode($task["ID"]); ?>"
+                                    class="task-list-item"
+                                >
+                                    <div>
+                                        <strong><?php echo htmlspecialchars($task["titulo"]); ?></strong>
+                                        <span>
+                                            Fecha de entrega:
+                                            <?php echo htmlspecialchars($task["fechaentrega"]); ?>
+                                        </span>
+                                    </div>
+
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            <?php } ?>
+                        </div>
+
+                        <div class="pagination-controls" data-list="tasksList"></div>
+
+                    <?php } ?>
+                </section>
 
             </section>
 
@@ -255,59 +255,131 @@ if ($teacherId === null) {
     </main>
 
 </div>
-    <div id="deleteCourseModal" class="modal-overlay">
-        <div class="modal danger">
-            <div class="modal-icon">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
 
-            <h2>Eliminar curso</h2>
-
-            <p>
-                ¿Está seguro de que desea eliminar el curso
-                <strong><?php echo htmlspecialchars($selectedCourse["nombre"] ?? ""); ?></strong>?
-            </p>
-
-            <p class="modal-highlight">
-                Esta acción no se puede deshacer.
-            </p>
-
-            <form 
-                method="POST" 
-                action="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/delete"
-                class="modal-actions"
-            >
-                <input type="hidden" name="action" value="delete_course">
-
-                <button 
-                    type="button" 
-                    class="modal-cancel-button" 
-                    onclick="closeModal('deleteCourseModal')"
-                >
-                    Cancelar
-                </button>
-
-                <button type="submit" class="modal-delete-button">
-                    Sí, eliminar
-                </button>
-            </form>
+<div id="deleteCourseModal" class="modal-overlay">
+    <div class="modal danger">
+        <div class="modal-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
+
+        <h2>Eliminar curso</h2>
+
+        <p>
+            ¿Está seguro de que desea eliminar el curso
+            <strong><?php echo htmlspecialchars($selectedCourse["nombre"] ?? ""); ?></strong>?
+        </p>
+
+        <p class="modal-highlight">
+            Esta acción no se puede deshacer.
+        </p>
+
+        <form 
+            method="POST" 
+            action="/courses/<?php echo urlencode($selectedCourse["ID"] ?? ""); ?>/delete"
+            class="modal-actions"
+        >
+            <input type="hidden" name="action" value="delete_course">
+
+            <button 
+                type="button" 
+                class="modal-cancel-button" 
+                onclick="closeDeleteCourseModal()"
+            >
+                Cancelar
+            </button>
+
+            <button type="submit" class="modal-delete-button">
+                Sí, eliminar
+            </button>
+        </form>
+    </div>
 </div>
 
-    <script>
-        function openDeleteCourseModal() {
-            document.getElementById("deleteCourseModal").classList.add("show");
-        }
+<script>
+function openDeleteCourseModal() {
+    document.getElementById("deleteCourseModal").classList.add("show");
+}
 
-        function closeDeleteCourseModal() {
-            document.getElementById("deleteCourseModal").classList.remove("show");
-        }
+function closeDeleteCourseModal() {
+    document.getElementById("deleteCourseModal").classList.remove("show");
+}
 
-        document.getElementById("deleteCourseModal").addEventListener("click", function(event) {
-            if (event.target === this) {
-                closeDeleteCourseModal();
-            }
-        });
-    </script>
+document.getElementById("deleteCourseModal").addEventListener("click", function(event) {
+    if (event.target === this) {
+        closeDeleteCourseModal();
+    }
+});
+
+function filterList(inputId, listId) {
+    const inputElement = document.getElementById(inputId);
+    const list = document.getElementById(listId);
+
+    if (!inputElement || !list) return;
+
+    const input = inputElement.value.toLowerCase();
+    const items = list.querySelectorAll(".compact-list-item, .task-list-item");
+
+    items.forEach(item => {
+        item.dataset.visible = item.textContent.toLowerCase().includes(input) ? "true" : "false";
+    });
+
+    setupPagination(listId, 1);
+}
+
+function setupPagination(listId, page = 1) {
+    const list = document.getElementById(listId);
+    if (!list) return;
+
+    const pageSize = parseInt(list.dataset.pageSize || "5");
+    const allItems = Array.from(list.querySelectorAll(".compact-list-item, .task-list-item"));
+    const visibleItems = allItems.filter(item => item.dataset.visible !== "false");
+
+    const totalPages = Math.max(1, Math.ceil(visibleItems.length / pageSize));
+
+    allItems.forEach(item => {
+        item.style.display = "none";
+    });
+
+    visibleItems.forEach((item, index) => {
+        if (index >= (page - 1) * pageSize && index < page * pageSize) {
+            item.style.display = "";
+        }
+    });
+
+    const controls = document.querySelector(`.pagination-controls[data-list="${listId}"]`);
+    if (!controls) return;
+
+    controls.innerHTML = "";
+
+    if (totalPages <= 1) return;
+
+    const prev = document.createElement("button");
+    prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+    prev.disabled = page === 1;
+    prev.onclick = function() {
+        setupPagination(listId, page - 1);
+    };
+
+    const label = document.createElement("span");
+    label.textContent = `${page} / ${totalPages}`;
+
+    const next = document.createElement("button");
+    next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+    next.disabled = page === totalPages;
+    next.onclick = function() {
+        setupPagination(listId, page + 1);
+    };
+
+    controls.appendChild(prev);
+    controls.appendChild(label);
+    controls.appendChild(next);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    setupPagination("studentsList", 1);
+    setupPagination("tasksList", 1);
+});
+</script>
+
 </body>
 </html>
