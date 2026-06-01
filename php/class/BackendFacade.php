@@ -106,4 +106,29 @@ class BackendFacade {
         return $this->assignment->getAssignmentsByCourse($courseId);
     }
 
+    public function getAssignmentByIdAndCourse(int $assignmentId, int $courseId): ?array {
+        return $this->assignment->getAssignmentByIdAndCourse($assignmentId, $courseId);
+    }
+
+    public function getSubmissionsByAssignment(int $assignmentId): array {
+        return $this->assignment->getSubmissionsByAssignment($assignmentId);
+    }
+
+    public function updateAssignment(
+        int $assignmentId,
+        int $courseId,
+        string $title,
+        string $description,
+        string $attachment,
+        string $dueDate): bool {
+        return $this->assignment->updateAssignment(
+            $assignmentId,
+            $courseId,
+            $title,
+            $description,
+            $attachment,
+            $dueDate
+        );
+    }
+
 }

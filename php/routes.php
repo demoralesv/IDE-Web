@@ -37,6 +37,11 @@ post('/courses/$ID/students/add', 'addStudents.php');
 get('/courses/$ID/assignments/create', 'createAssignment.php');
 post('/courses/$ID/assignments/create', 'createAssignment.php');
 
+get('/courses/$ID/assignments/$assignmentID', 'assignmentDetails.php');
+
+get('/courses/$ID/assignments/$assignmentID/edit', 'editAssignment.php');
+post('/courses/$ID/assignments/$assignmentID/edit', 'editAssignment.php');
+
 get('/logout', 'logout.php');
 
 

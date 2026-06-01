@@ -875,6 +875,65 @@ input.input-error {
   background-color: #eef3ff;
 }
 
+.assignment-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+/* Visualización de asignaciones */
+.assignment-field {
+  margin-bottom: 24px;
+}
+
+.assignment-field span {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.assignment-field strong {
+  color: var(--extra1-color);
+  font-size: 17px;
+}
+
+.assignment-description {
+  background: var(--background-color);
+  padding: 18px;
+  border-radius: 12px;
+  color: #222;
+  line-height: 1.5;
+
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--extra1-color);
+  background: var(--background-color);
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.attachment-link:hover {
+  background: #dfe7f3;
+}
+
+@media (max-width: 1000px) {
+  .assignment-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* EasyMDE, que es el markdown para la descripción de las tareas */
 .EasyMDEContainer {
   width: 100%;
@@ -1012,4 +1071,32 @@ input.input-error {
   max-height: none !important;
   z-index: 9999 !important;
   padding: 24px 32px !important;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: var(--extra1-color);
+}
+
+.markdown-content p {
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin: 8px 0 14px 0;
+  padding-left: 24px;
+}
+
+.markdown-content li {
+  margin-bottom: 6px;
+}
+
+.markdown-content br {
+  line-height: 1;
 }
