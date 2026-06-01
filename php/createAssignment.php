@@ -19,6 +19,10 @@ $courseId = filter_var($ID ?? null, FILTER_VALIDATE_INT);
 $error = "";
 $success = "";
 $selectedCourse = null;
+$titleValue = "";
+$descriptionValue = "";
+$filePathValue = "";
+$dueDateValue = "";
 
 if ($teacherId === null) {
     $error = "No se pudo identificar al profesor.";
@@ -29,6 +33,30 @@ if ($teacherId === null) {
 
     if (!$selectedCourse) {
         $error = "El curso no existe o no pertenece a este profesor.";
+    }
+}
+if ($selectedCourse && $_SERVER["REQUEST_METHOD"] === "POST") {
+    $titleValue = trim($_POST["title"] ?? "");
+    $descriptionValue = trim($_POST["description"] ?? "");
+    $filePathValue = trim($_POST["filePath"] ?? "");
+    $dueDateValue = trim($_POST["dueDate"] ?? "");
+
+    $title = $titleValue;
+    $description = $descriptionValue;
+    $filePath = $filePathValue;
+    $dueDate = $dueDateValue;
+
+    if ($title === "" || $description === "" || $dueDate === "") {
+        $error = "Favor ingresar título, descripción y fecha de entrega.";
+    } elseif ($dueDate < date("Y-m-d")) {
+        $error = "La fecha de entrega no puede ser anterior a hoy.";
+    } else {
+        if ($backend->createAssignment($courseId, $title, $description, $filePath, $dueDate)) {
+            header("Location: /courses/" . urlencode($courseId));
+            exit;
+        } else {
+            $error = "Ocurrió un error al crear la tarea.";
+        }
     }
 }
 ?>
@@ -70,6 +98,11 @@ if ($teacherId === null) {
         </section>
 
         <section class="dashboard-card">
+            <?php if ($success !== "") { ?>
+                <div class="message success">
+                    <?php echo htmlspecialchars($success); ?>
+                </div>
+            <?php } ?>
 
             <?php if ($error !== "") { ?>
                 <div class="message error">
@@ -88,6 +121,7 @@ if ($teacherId === null) {
                             id="title" 
                             name="title" 
                             placeholder="Ej: Investigación"
+                            value="<?php echo htmlspecialchars($titleValue); ?>"
                             required
                         >
                     </div>
@@ -98,7 +132,7 @@ if ($teacherId === null) {
                             id="description" 
                             name="description"
                             placeholder="# Instrucciones de la tarea"
-                        ></textarea>
+                        ><?php echo htmlspecialchars($descriptionValue); ?></textarea></textarea>
                     </div>
 
                     <div class="form-group">
@@ -108,6 +142,15 @@ if ($teacherId === null) {
                             id="filePath" 
                             name="filePath" 
                             placeholder="Ej: /download/tarea1.pdf o https://..."
+                            value="<?php echo htmlspecialchars($filePathValue); ?>"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="localFile">Seleccionar archivo</label>
+                        <input 
+                            type="file" 
+                            id="localFile"
+                            onchange="setFilePath(this)"
                         >
                     </div>
                     <div class="form-group">
@@ -117,6 +160,7 @@ if ($teacherId === null) {
                             id="dueDate" 
                             name="dueDate"
                             min="<?php echo date('Y-m-d'); ?>"
+                            value="<?php echo htmlspecialchars($dueDateValue); ?>"
                             required
                         >
                     </div>
@@ -135,6 +179,11 @@ if ($teacherId === null) {
 </div>
 
 <script>
+    function setFilePath(input) {
+        if (input.files.length > 0) {
+            document.getElementById("filePath").value = input.files[0].name;
+        }
+    }
     const easyMDE = new EasyMDE({
         element: document.getElementById("description"),
         spellChecker: false,

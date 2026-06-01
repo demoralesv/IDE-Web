@@ -1,12 +1,14 @@
 <?php
 
 require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/Assignment.php';
 require_once __DIR__ . '/Auth.php';
 require_once __DIR__ . '/Teacher.php';
 require_once __DIR__ . '/Course.php';
 require_once __DIR__ . '/UserService.php';
 
 class BackendFacade {
+    private Assignment $assignment;
     private Auth $auth;
     private Teacher $teacher;
     private Course $course;
@@ -16,6 +18,7 @@ class BackendFacade {
         $database = new Database();
         $conn = $database->getConnection();
 
+        $this->assignment = new Assignment($conn);
         $this->auth = new Auth($conn);
         $this->teacher = new Teacher($conn);
         $this->course = new Course($conn);
@@ -82,6 +85,21 @@ class BackendFacade {
 
     public function addStudentToCourse(int $courseId, int $studentId): bool {
         return $this->course->addStudentToCourse($courseId, $studentId);
+    }
+
+    public function createAssignment(
+        int $courseId,
+        string $title,
+        string $description,
+        string $attachment,
+        string $dueDate ): bool {
+        return $this->assignment->createAssignment(
+            $courseId,
+            $title,
+            $description,
+            $attachment,
+            $dueDate
+        );
     }
 
 }
