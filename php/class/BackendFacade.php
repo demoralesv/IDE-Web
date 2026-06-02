@@ -55,7 +55,7 @@ class BackendFacade {
         return $course ?: null;
     }
 
-    public function addCourse(string $name, int $code, int $group, int $teacherId): bool {
+    public function addCourse(string $name, int $code, int $group, int $teacherId): int|false {
         return $this->course->addCourse($name, $code, $group, $teacherId);
     }
 

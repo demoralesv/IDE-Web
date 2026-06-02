@@ -67,15 +67,9 @@ $nombre = $backend->getTeacherName($usuario);
                     <p>Evaluaciones</p>
                 </div>
             </div>
-            <div class="summary-card">
-                <span class="summary-icon"><i class="fa-regular fa-file-zipper" style="color: var(--icon-color);"></i></span>
-                <div>
-                    <h3><?php echo htmlspecialchars($statistics["total_submissions"]); ?></h3>
-                    <p>Entregas</p>
-                </div>
-            </div>
+            
         </section>
-        <a href="/download/test.jpg" download="" target="_blank"> <button> <i class="fa-solid fa-download" style="color: white;"></i>  Descargar IDE </button> </a> 
+        <a href="/download/Release.zip" download="" target="_blank"> <button> <i class="fa-solid fa-download" style="color: white;"></i>  Descargar IDE </button> </a> 
 
     </main>
 </div>

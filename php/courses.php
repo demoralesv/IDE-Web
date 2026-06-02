@@ -112,7 +112,7 @@ if ($teacherId === null) {
 
                 <div class="summary-card">
                     <div class="summary-icon">
-                        <i class="fa-solid fa-users"></i>
+                        <i class="fa-solid fa-users" style="color: var(--icon-color);"></i>
                     </div>
                     <div>
                         <h3><?php echo htmlspecialchars($statistics["total_students"]); ?></h3>
@@ -122,21 +122,11 @@ if ($teacherId === null) {
 
                 <div class="summary-card">
                     <div class="summary-icon">
-                        <i class="fa-solid fa-list-check"></i>
+                        <i class="fa-regular fa-file-lines" style="color: var(--icon-color);"></i>
                     </div>
                     <div>
                         <h3><?php echo htmlspecialchars($statistics["total_tasks"]); ?></h3>
                         <p>Evaluaciones</p>
-                    </div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="summary-icon">
-                        <i class="fa-solid fa-inbox"></i>
-                    </div>
-                    <div>
-                        <h3><?php echo htmlspecialchars($statistics["total_submissions"]); ?></h3>
-                        <p>Entregas</p>
                     </div>
                 </div>
 
@@ -156,7 +146,7 @@ if ($teacherId === null) {
                             class="circle-action-button"
                             title="Agregar estudiantes"
                         >
-                            <i class="fa-solid fa-plus"></i>
+                            <i class="fa-solid fa-user-plus" style="color: var(--icon-color);"></i>
                         </a>
                     </div>
 
@@ -204,7 +194,7 @@ if ($teacherId === null) {
                             class="circle-action-button"
                             title="Crear tarea"
                         >
-                            <i class="fa-solid fa-plus"></i>
+                            <i class="fa-solid fa-file-circle-plus" style="color: var(--icon-color);"></i>
                         </a>
                     </div>
 

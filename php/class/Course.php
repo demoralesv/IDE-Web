@@ -44,9 +44,30 @@ class Course {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function addCourse($name, $code, $group, $teacherId): bool {
+    public function addCourse($name, $code, $group, $teacherId): int|false {
         try {
             $this->conn->beginTransaction();
+
+            $checkStmt = $this->conn->prepare("
+                SELECT ID
+                FROM curso
+                WHERE nombre = :nombre
+                AND grupo = :grupo
+                LIMIT 1
+            ");
+
+            $checkStmt->execute([
+                ":nombre" => $name,
+                ":grupo" => $group,
+                
+            ]);
+
+            $existingCourse = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($existingCourse) {
+                $this->conn->rollBack();
+                return false;
+            }
 
             $stmt = $this->conn->prepare("
                 INSERT INTO curso (nombre, codigo, grupo, profesorusuarioid)
@@ -65,8 +86,10 @@ class Course {
                 return false;
             }
 
+            $newCourseId = (int) $this->conn->lastInsertId();
+
             $this->conn->commit();
-            return true;
+            return $newCourseId;
 
         } catch (PDOException $e) {
             if ($this->conn->inTransaction()) {

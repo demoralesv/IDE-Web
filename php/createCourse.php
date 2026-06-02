@@ -16,29 +16,31 @@ $backend = new BackendFacade();
 
 $usuario = $_SESSION["usuario"];
 $nombre = $backend->getTeacherName($usuario);
-
+$newCourseId = null;
 $success = "";
 $error = "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name = trim($_POST["name"] ?? "");
-    $code = trim($_POST["code"] ?? "");
-    $group = trim($_POST["group"] ?? "");
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $name = trim($_POST["name"] ?? "");
+        $code = trim($_POST["code"] ?? "");
+        $group = trim($_POST["group"] ?? "");
 
-    $teacherId = $_SESSION["ID"] ?? null;
-    
-    if ($name === "" || $code === "" || $group === "") {
-        $error = "Favor ingresar todos los datos del curso.";
-    } elseif ($teacherId === null) {
-        $error = "No se pudo identificar al profesor.";
-    } else {
-        if ($backend->addCourse($name, $code, $group, $teacherId)) {
-            $success = "Curso creado correctamente.";
+        $teacherId = $_SESSION["ID"] ?? null;
+        
+        if ($name === "" || $code === "" || $group === "") {
+            $error = "Favor ingresar todos los datos del curso.";
+        } elseif ($teacherId === null) {
+            $error = "No se pudo identificar al profesor.";
         } else {
-            $error = "Ocurrió un error al crear el curso.";
+            $newCourseId = $backend->addCourse($name, $code, $group, $teacherId);
+
+            if ($newCourseId !== false) {
+                $success = "Curso creado correctamente.";
+            } else {
+                $error = "Ya existe un curso con ese nombre y grupo, o ocurrió un error al crearlo.";
+            }
         }
     }
-}
 ?>
 
 <!DOCTYPE html>
@@ -102,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         type="text" 
                         id="code" 
                         name="code" 
-                        placeholder="Ejemplo: IC1802"
+                        placeholder="Ejemplo: 1802"
                         value="<?php echo htmlspecialchars($_POST["code"] ?? ""); ?>"
                         required
                     >
@@ -133,5 +135,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 </div>
 
+    <?php if ($success && $newCourseId !== null): ?>
+        <div id="successCourseModal" class="modal-overlay show">
+            <div class="modal success">
+                <div class="modal-icon">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <h2>Curso creado</h2>
+
+                <p class="modal-highlight">
+                    Curso creado correctamente.
+                </p>
+
+                <p>Redirigiendo al nuevo curso...</p>
+            </div>
+        </div>
+
+        <script>
+            setTimeout(function() {
+                window.location.href = "/courses/<?php echo urlencode($newCourseId); ?>";
+            }, 2000);
+        </script>
+    <?php endif; ?>
+
+    <script>
+        function openModal(modalId) {
+                    document.getElementById(modalId).classList.add("show");
+                }
+
+                function closeModal(modalId) {
+                    document.getElementById(modalId).classList.remove("show");
+                }
+
+                document.querySelectorAll(".modal-overlay").forEach(function(modal) {
+                    modal.addEventListener("click", function(event) {
+                        if (event.target === this) {
+                            this.classList.remove("show");
+                        }
+                    });
+                });
+    </script>
 </body>
 </html>
