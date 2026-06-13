@@ -152,6 +152,33 @@ input[type="text"]:focus {
   border: 1px solid #cfc;
 }
 
+.auth-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px;
+}
+
+.login-logo {
+  width: 160px;
+  max-width: 45vw;
+  height: auto;
+  display: block;
+}
+
+.login-container {
+  background: var(--second-background-color);
+  padding: 48px 40px;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
 @media (max-width: 480px) {
   .login-container {
     padding: 40px 24px;
