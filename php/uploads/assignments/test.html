@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa de proyectos</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        body {
+            margin: 0;
+            background: #cfcfcf;
+        }
+
+        .mapa-proyectos-wrapper {
+            position: relative;
+            width: 50vw;
+            height: 50vh;
+            background: #cfcfcf;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #mapaPrincipal {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #mapaCostaRica {
+            position: absolute;
+            left: 35px;
+            bottom: 155px;
+            width: 420px;
+            height: 260px;
+            z-index: 500;
+            background: #d8d8d8;
+        }
+
+        .mapa-proyectos-wrapper .leaflet-tile {
+            filter: grayscale(100%) contrast(90%) brightness(105%);
+        }
+
+        .mapa-leyenda {
+            position: absolute;
+            left: 55px;
+            bottom: 55px;
+            z-index: 700;
+            background: transparent;
+            color: #111;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .mapa-leyenda-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 18px;
+        }
+
+        .leyenda-proyecto,
+        .leyenda-colaboracion {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .leyenda-proyecto {
+            background: #8b0f1d;
+            border: 2px solid #8b0f1d;
+        }
+
+        .leyenda-colaboracion {
+            background: #ffffff;
+            border: 2px solid #8b0f1d;
+        }
+
+        .lineas-inset {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 600;
+        }
+
+        .leaflet-control-attribution {
+            font-size: 9px;
+            opacity: 0.55;
+        }
+    </style>
+</head>
+<body>
+
+<div class="mapa-proyectos-wrapper">
+
+    <div id="mapaPrincipal"></div>
+    <!-- <div id="mapaCostaRica"></div> -->
+<!-- 
+    <svg class="lineas-inset" viewBox="0 0 1680 960" preserveAspectRatio="none">
+    <line x1="400" y1="580" x2="775" y2="450"
+          stroke="#8b0f1d" stroke-width="3"
+          stroke-dasharray="10 10" />
+
+    <line x1="400" y1="785" x2="780" y2="470"
+          stroke="#8b0f1d" stroke-width="3"
+          stroke-dasharray="10 10" />
+</svg>
+-->
+    <div class="mapa-leyenda">
+        <div class="mapa-leyenda-item">
+            <span class="leyenda-proyecto"></span>
+            <span>PROYECTOS</span>
+        </div>
+
+        <div class="mapa-leyenda-item">
+            <span class="leyenda-colaboracion"></span>
+            <span>COLABORACIONES</span>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const colorProyecto = "#8b0f1d";
+
+        const proyectos = [
+            {
+                nombre: "Proyecto San José",
+                lat: 9.9281,
+                lng: -84.0907,
+                pais: "Costa Rica"
+            },
+            {
+                nombre: "Proyecto Cartago",
+                lat: 9.8644,
+                lng: -83.9194,
+                pais: "Costa Rica"
+            },
+            {
+                nombre: "Proyecto Heredia",
+                lat: 10.0024,
+                lng: -84.1165,
+                pais: "Costa Rica"
+            },
+            {
+                nombre: "Proyecto Panamá",
+                lat: 8.9824,
+                lng: -79.5199,
+                pais: "Panamá"
+            },
+            {
+                nombre: "Proyecto República Dominicana",
+                lat: 18.4861,
+                lng: -69.9312,
+                pais: "República Dominicana"
+            }
+        ];
+
+        const colaboraciones = [
+            {
+                nombre: "Colaboración Guatemala",
+                lat: 14.6349,
+                lng: -90.5069,
+                pais: "Guatemala"
+            },
+            {
+                nombre: "Colaboración Belice",
+                lat: 17.5046,
+                lng: -88.1962,
+                pais: "Belice"
+            },
+            {
+                nombre: "Colaboración Ecuador",
+                lat: -0.1807,
+                lng: -78.4678,
+                pais: "Ecuador"
+            },
+            {
+                nombre: "Colaboración Bolivia",
+                lat: -16.5000,
+                lng: -68.1500,
+                pais: "Bolivia"
+            }
+        ];
+
+        function crearMapa(id, centro, zoom, bloqueado = false) {
+    const mapa = L.map(id, {
+        zoomControl: false,
+        scrollWheelZoom: !bloqueado,
+        dragging: !bloqueado,
+        doubleClickZoom: !bloqueado,
+        touchZoom: !bloqueado,
+        boxZoom: !bloqueado,
+        keyboard: !bloqueado,
+        attributionControl: true
+    }).setView(centro, zoom);
+
+    L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: "abcd",
+            maxZoom: 20
+        }
+    ).addTo(mapa);
+
+    return mapa;
+}
+
+        const mapaPrincipal = crearMapa("mapaPrincipal", [8, -78], 4, false);
+        //const mapaCostaRica = crearMapa("mapaCostaRica", [9.75, -84.1], 7, false);
+
+        function agregarMarcador(mapa, punto, tipo) {
+            const esProyecto = tipo === "proyecto";
+
+            L.circleMarker([punto.lat, punto.lng], {
+                radius: esProyecto ? 7 : 6,
+                color: colorProyecto,
+                weight: 2,
+                fillColor: esProyecto ? colorProyecto : "#ffffff",
+                fillOpacity: esProyecto ? 1 : 0.95
+            })
+            .addTo(mapa)
+            .bindPopup(
+                "<strong>" + punto.nombre + "</strong><br>" +
+                punto.pais + "<br>" +
+                (esProyecto ? "Proyecto" : "Colaboración")
+            );
+        }
+
+        proyectos.forEach(function (punto) {
+            agregarMarcador(mapaPrincipal, punto, "proyecto");
+
+            if (punto.pais === "Costa Rica") {
+                //agregarMarcador(mapaCostaRica, punto, "proyecto");
+            }
+        });
+
+        colaboraciones.forEach(function (punto) {
+            agregarMarcador(mapaPrincipal, punto, "colaboracion");
+
+            if (punto.pais === "Costa Rica") {
+                //agregarMarcador(mapaCostaRica, punto, "colaboracion");
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>
