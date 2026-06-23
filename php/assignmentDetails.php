@@ -149,50 +149,54 @@ if ($teacherId === null) {
                 
 
                 <section class="dashboard-card submissions-card">
-                <h2>Entregas</h2>
-                <p>Entregas realizadas por estudiantes.</p>
+                    <h2>Entregas</h2>
+                    <p>Entregas realizadas por estudiantes.</p>
 
-                <?php if (empty($submissions)) { ?>
+                    <?php if (empty($submissions)) { ?>
 
-                    <div class="message error">
-                        Esta tarea todavía no tiene entregas registradas.
-                    </div>
+                        <div class="message error">
+                            Esta tarea todavía no tiene entregas registradas.
+                        </div>
 
-                <?php } else { ?>
+                    <?php } else { ?>
 
-                    <div class="task-list">
-                        <?php foreach ($submissions as $submission) { ?>
-                            <div class="task-list-item">
-                                <div>
-                                    <strong>
-                                        Entrega #<?php echo htmlspecialchars($submission["numero"]); ?>
-                                    </strong>
+                        <div class="task-list">
+                            <?php foreach ($submissions as $submission) { ?>
+                                <div class="task-list-item">
+                                    <div>
+                                        <strong>
+                                            Entrega #<?php echo htmlspecialchars($submission["numero"]); ?>
+                                        </strong>
 
-                                    <span>
-                                        Fecha:
-                                        <?php echo htmlspecialchars($submission["fechaentrega"]); ?>
-                                    </span>
+                                        <span>
+                                            Grupo #<?php echo htmlspecialchars($submission["grupoNumero"]); ?>
+                                        </span>
+
+                                        <span>
+                                            Fecha:
+                                            <?php echo htmlspecialchars($submission["fechaentrega"]); ?>
+                                        </span>
+                                    </div>
+
+                                    <?php if (!empty($submission["proyecto"])) { ?>
+                                        <a 
+                                            href="<?php echo htmlspecialchars($submission["proyecto"], ENT_QUOTES, 'UTF-8'); ?>" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            class="attachment-link"
+                                        >
+                                            <i class="fa-solid fa-up-right-from-square"></i>
+                                            Ver entrega
+                                        </a>
+                                    <?php } else { ?>
+                                        <span>Sin archivo</span>
+                                    <?php } ?>
                                 </div>
+                            <?php } ?>
+                        </div>
 
-                                <?php if (!empty($submission["proyecto"])) { ?>
-                                    <a 
-                                        href="<?php echo htmlspecialchars($submission["proyecto"], ENT_QUOTES, 'UTF-8'); ?>" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        class="attachment-link"
-                                    >
-                                        <i class="fa-solid fa-up-right-from-square"></i>
-                                        Ver entrega
-                                    </a>
-                                <?php } else { ?>
-                                    <span>Sin archivo</span>
-                                <?php } ?>
-                            </div>
-                        <?php } ?>
-                    </div>
-
-                <?php } ?>
-            </section>
+                    <?php } ?>
+                </section>
 
             </section>
 

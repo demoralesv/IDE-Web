@@ -87,7 +87,8 @@ class Assignment {
                 e.numero,
                 e.proyecto,
                 e.fechaentrega,
-                e.grupoid
+                e.grupoid,
+                g.numero AS grupoNumero
             FROM entrega e
             INNER JOIN grupo g ON g.ID = e.grupoid
             WHERE g.evaluacionID = :assignmentId
