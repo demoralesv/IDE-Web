@@ -248,4 +248,239 @@ class Course {
         }
     }
 
+    public function getAssignmentByCourseAndTeacher(int $evaluationId, int $courseId, int $teacherId): ?array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                ev.ID,
+                ev.titulo,
+                ev.descripcion,
+                ev.adjunto,
+                ev.fechaentrega,
+                ev.cursoid,
+                c.nombre AS cursoNombre,
+                c.codigo AS cursoCodigo,
+                c.grupo AS cursoGrupo
+            FROM evaluacion ev
+            INNER JOIN curso c ON c.ID = ev.cursoid
+            WHERE ev.ID = :evaluationId
+            AND ev.cursoid = :courseId
+            AND c.profesorusuarioid = :teacherId
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            ":evaluationId" => $evaluationId,
+            ":courseId" => $courseId,
+            ":teacherId" => $teacherId
+        ]);
+
+        $assignment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $assignment ?: null;
+    }
+
+    public function getAvailableStudentsForAssignment(int $courseId, int $evaluationId): array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                u.ID,
+                u.nombre,
+                u.apellido1,
+                u.correo
+            FROM estudiante_curso ec
+            INNER JOIN estudiante e ON e.ID = ec.estudianteusuarioID
+            INNER JOIN usuario u ON u.ID = e.ID
+            WHERE ec.cursoID = :courseId
+            AND NOT EXISTS (
+                SELECT 1
+                FROM estudiante_grupo eg
+                INNER JOIN grupo g ON g.ID = eg.grupoID
+                WHERE g.evaluacionID = :evaluationId
+                AND eg.estudianteusuarioID = u.ID
+            )
+            ORDER BY u.nombre ASC, u.apellido1 ASC
+        ");
+
+        $stmt->execute([
+            ":courseId" => $courseId,
+            ":evaluationId" => $evaluationId
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getGroupsByAssignment(int $evaluationId): array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                g.ID AS grupoID,
+                g.numero AS grupoNumero,
+                u.ID AS estudianteID,
+                u.nombre,
+                u.apellido1,
+                u.correo
+            FROM grupo g
+            LEFT JOIN estudiante_grupo eg ON eg.grupoID = g.ID
+            LEFT JOIN usuario u ON u.ID = eg.estudianteusuarioID
+            WHERE g.evaluacionID = :evaluationId
+            ORDER BY g.numero ASC, u.nombre ASC
+        ");
+
+        $stmt->execute([
+            ":evaluationId" => $evaluationId
+        ]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $groups = [];
+
+        foreach ($rows as $row) {
+            $groupId = (int) $row["grupoID"];
+
+            if (!isset($groups[$groupId])) {
+                $groups[$groupId] = [
+                    "ID" => $groupId,
+                    "numero" => (int) $row["grupoNumero"],
+                    "estudiantes" => []
+                ];
+            }
+
+            if ($row["estudianteID"] !== null) {
+                $groups[$groupId]["estudiantes"][] = [
+                    "ID" => (int) $row["estudianteID"],
+                    "nombre" => $row["nombre"],
+                    "apellido1" => $row["apellido1"],
+                    "correo" => $row["correo"]
+                ];
+            }
+        }
+
+        return array_values($groups);
+    }
+
+    public function createAssignmentGroup(int $evaluationId, array $studentIds): int|false {
+        try {
+            $studentIds = array_unique(array_map("intval", $studentIds));
+
+            if (empty($studentIds)) {
+                return false;
+            }
+
+            $this->conn->beginTransaction();
+
+            $evalStmt = $this->conn->prepare("
+                SELECT cursoid
+                FROM evaluacion
+                WHERE ID = :evaluationId
+                LIMIT 1
+            ");
+
+            $evalStmt->execute([
+                ":evaluationId" => $evaluationId
+            ]);
+
+            $evaluation = $evalStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$evaluation) {
+                $this->conn->rollBack();
+                return false;
+            }
+
+            $courseId = (int) $evaluation["cursoid"];
+
+            $placeholders = implode(",", array_fill(0, count($studentIds), "?"));
+
+            $enrolledStmt = $this->conn->prepare("
+                SELECT COUNT(*) AS total
+                FROM estudiante_curso
+                WHERE cursoID = ?
+                AND estudianteusuarioID IN ($placeholders)
+            ");
+
+            $enrolledStmt->execute(array_merge([$courseId], $studentIds));
+
+            $enrolledCount = (int) $enrolledStmt->fetch(PDO::FETCH_ASSOC)["total"];
+
+            if ($enrolledCount !== count($studentIds)) {
+                $this->conn->rollBack();
+                return false;
+            }
+
+            $assignedStmt = $this->conn->prepare("
+                SELECT COUNT(*) AS total
+                FROM estudiante_grupo eg
+                INNER JOIN grupo g ON g.ID = eg.grupoID
+                WHERE g.evaluacionID = ?
+                AND eg.estudianteusuarioID IN ($placeholders)
+            ");
+
+            $assignedStmt->execute(array_merge([$evaluationId], $studentIds));
+
+            $assignedCount = (int) $assignedStmt->fetch(PDO::FETCH_ASSOC)["total"];
+
+            if ($assignedCount > 0) {
+                $this->conn->rollBack();
+                return false;
+            }
+
+            $numberStmt = $this->conn->prepare("
+                SELECT COALESCE(MAX(numero), 0) + 1 AS nextNumber
+                FROM grupo
+                WHERE evaluacionID = :evaluationId
+            ");
+
+            $numberStmt->execute([
+                ":evaluationId" => $evaluationId
+            ]);
+
+            $groupNumber = (int) $numberStmt->fetch(PDO::FETCH_ASSOC)["nextNumber"];
+
+            $groupStmt = $this->conn->prepare("
+                INSERT INTO grupo (numero, evaluacionID)
+                VALUES (:numero, :evaluacionID)
+            ");
+
+            $groupInserted = $groupStmt->execute([
+                ":numero" => $groupNumber,
+                ":evaluacionID" => $evaluationId
+            ]);
+
+            if (!$groupInserted) {
+                $this->conn->rollBack();
+                return false;
+            }
+
+            $groupId = (int) $this->conn->lastInsertId();
+
+            $studentGroupStmt = $this->conn->prepare("
+                INSERT INTO estudiante_grupo (grupoID, estudianteusuarioID)
+                VALUES (:grupoID, :estudianteusuarioID)
+            ");
+
+            foreach ($studentIds as $studentId) {
+                $inserted = $studentGroupStmt->execute([
+                    ":grupoID" => $groupId,
+                    ":estudianteusuarioID" => $studentId
+                ]);
+
+                if (!$inserted) {
+                    $this->conn->rollBack();
+                    return false;
+                }
+            }
+
+            $this->conn->commit();
+
+            return $groupId;
+
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            error_log("Error al crear grupo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+
 }

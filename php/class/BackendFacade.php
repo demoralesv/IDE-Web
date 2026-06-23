@@ -131,4 +131,20 @@ class BackendFacade {
         );
     }
 
+    public function getAssignmentByCourseAndTeacher(int $evaluationId, int $courseId, int $teacherId): ?array {
+        return $this->course->getAssignmentByCourseAndTeacher($evaluationId, $courseId, $teacherId);
+    }
+
+    public function getAvailableStudentsForAssignment(int $courseId, int $evaluationId): array {
+        return $this->course->getAvailableStudentsForAssignment($courseId, $evaluationId);
+    }
+
+    public function getGroupsByAssignment(int $evaluationId): array {
+        return $this->course->getGroupsByAssignment($evaluationId);
+    }
+
+    public function createAssignmentGroup(int $evaluationId, array $studentIds): int|false {
+        return $this->course->createAssignmentGroup($evaluationId, $studentIds);
+    }
+
 }

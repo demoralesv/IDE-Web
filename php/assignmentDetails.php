@@ -89,6 +89,14 @@ if ($teacherId === null) {
                 </div>
 
                 <a 
+                    href="/courses/<?php echo urlencode($selectedCourse["ID"]); ?>/assignments/<?php echo urlencode($assignment["ID"]); ?>/groups" 
+                    class="quick-action"
+                >
+                    <i class="fa-solid fa-users"></i>
+                    Administrar grupos
+                </a>
+
+                <a 
                     href="/courses/<?php echo urlencode($courseId); ?>/assignments/<?php echo urlencode($assignmentId); ?>/edit"
                     class="circle-action-button"
                     title="Editar tarea"
@@ -138,44 +146,53 @@ if ($teacherId === null) {
                     </div>
                 </section>
 
+                
+
                 <section class="dashboard-card submissions-card">
-                    <h2>Entregas</h2>
-                    <p>Entregas realizadas por estudiantes.</p>
+                <h2>Entregas</h2>
+                <p>Entregas realizadas por estudiantes.</p>
 
-                    <?php if (empty($submissions)) { ?>
+                <?php if (empty($submissions)) { ?>
 
-                        <div class="message error">
-                            Esta tarea todavía no tiene entregas registradas.
-                        </div>
+                    <div class="message error">
+                        Esta tarea todavía no tiene entregas registradas.
+                    </div>
 
-                    <?php } else { ?>
+                <?php } else { ?>
 
-                        <div class="task-list">
-                            <?php foreach ($submissions as $submission) { ?>
-                                <div class="task-list-item">
-                                    <div>
-                                        <strong>
-                                            Entrega #<?php echo htmlspecialchars($submission["numero"]); ?>
-                                        </strong>
+                    <div class="task-list">
+                        <?php foreach ($submissions as $submission) { ?>
+                            <div class="task-list-item">
+                                <div>
+                                    <strong>
+                                        Entrega #<?php echo htmlspecialchars($submission["numero"]); ?>
+                                    </strong>
 
-                                        <span>
-                                            Fecha:
-                                            <?php echo htmlspecialchars($submission["fechaentrega"]); ?>
-                                        </span>
-
-                                        <span>
-                                            Proyecto:
-                                            <?php echo htmlspecialchars($submission["proyecto"]); ?>
-                                        </span>
-                                    </div>
-
-                                    <i class="fa-solid fa-file-lines"></i>
+                                    <span>
+                                        Fecha:
+                                        <?php echo htmlspecialchars($submission["fechaentrega"]); ?>
+                                    </span>
                                 </div>
-                            <?php } ?>
-                        </div>
 
-                    <?php } ?>
-                </section>
+                                <?php if (!empty($submission["proyecto"])) { ?>
+                                    <a 
+                                        href="<?php echo htmlspecialchars($submission["proyecto"], ENT_QUOTES, 'UTF-8'); ?>" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        class="attachment-link"
+                                    >
+                                        <i class="fa-solid fa-up-right-from-square"></i>
+                                        Ver entrega
+                                    </a>
+                                <?php } else { ?>
+                                    <span>Sin archivo</span>
+                                <?php } ?>
+                            </div>
+                        <?php } ?>
+                    </div>
+
+                <?php } ?>
+            </section>
 
             </section>
 

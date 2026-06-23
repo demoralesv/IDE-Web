@@ -42,66 +42,20 @@ get('/courses/$ID/assignments/$assignmentID', 'assignmentDetails.php');
 get('/courses/$ID/assignments/$assignmentID/edit', 'editAssignment.php');
 post('/courses/$ID/assignments/$assignmentID/edit', 'editAssignment.php');
 
+get('/courses/$courseID/assignments/$evaluationID/groups', 'manageAssignmentGroups.php');
+post('/courses/$courseID/assignments/$evaluationID/groups', 'manageAssignmentGroups.php');
+
 get('/logout', 'logout.php');
-
-
-// Dynamic GET. Example with 2 variables
-// The $name will be available in full_name.php
-// The $last_name will be available in full_name.php
-// In the browser point to: localhost/user/X/Y
-get('/user/$name/$last_name', 'views/full_name.php');
-
-// Dynamic GET. Example with 2 variables with static
-// In the URL -> http://localhost/product/shoes/color/blue
-// The $type will be available in product.php
-// The $color will be available in product.php
-get('/product/$type/color/$color', 'product.php');
-
-// A route with a callback
-get('/callback', function(){
-  echo 'Callback executed';
-});
-
-// A route with a callback passing a variable
-// To run this route, in the browser type:
-// http://localhost/user/A
-get('/callback/$name', function($name){
-  echo "Callback executed. The name is $name";
-});
-
-// Route where the query string happends right after a forward slash
-get('/product', '');
-
-// A route with a callback passing 2 variables
-// To run this route, in the browser type:
-// http://localhost/callback/A/B
-get('/callback/$name/$last_name', function($name, $last_name){
-  echo "Callback executed. The full name is $name $last_name";
-});
-
-// ##################################################
-// ##################################################
-// ##################################################
-// Route that will use POST data
-post('/user', '/api/save_user');
 
 // ##################################################
 // API STUDENTS
 // ##################################################
 
-// Register a student from the IDE
 post('/api/register', 'api/students/registerStudent.php');
-
-// Login of a student from the IDE, returns JWT token if successful
 post('/api/login', 'api/students/loginStudent.php');
-
-// Get the courses of a student, requires JWT token in Authorization header
 get('/api/courses', 'api/students/getStudentCourses.php');
-
-// ##################################################
-// ##################################################
-// ##################################################
-// any can be used for GETs or POSTs
+get('/api/students/assignments/$evaluationID/group', 'api/students/getAssignmentGroup.php');
+post('/api/students/assignments/$evaluationID/submit', 'api/students/submitAssignment.php');
 
 // For GET or POST
 // The 404.php which is inside the views folder will be called

@@ -201,4 +201,121 @@ class Student {
 
         return array_values($courses);
     }
+
+    public function getStudentGroupForAssignment(int $evaluationId, int $studentId): ?array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                g.ID,
+                g.numero,
+                g.evaluacionID,
+                ev.titulo,
+                ev.descripcion,
+                ev.fechaentrega,
+                ev.adjunto
+            FROM grupo g
+            INNER JOIN estudiante_grupo eg ON eg.grupoID = g.ID
+            INNER JOIN evaluacion ev ON ev.ID = g.evaluacionID
+            WHERE g.evaluacionID = :evaluationId
+            AND eg.estudianteusuarioID = :studentId
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            ":evaluationId" => $evaluationId,
+            ":studentId" => $studentId
+        ]);
+
+        $group = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $group ?: null;
+    }
+
+    public function getGroupMembers(int $groupId): array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                u.ID,
+                u.nombre,
+                u.apellido1,
+                u.correo
+            FROM estudiante_grupo eg
+            INNER JOIN usuario u ON u.ID = eg.estudianteusuarioID
+            WHERE eg.grupoID = :groupId
+            ORDER BY u.nombre ASC, u.apellido1 ASC
+        ");
+
+        $stmt->execute([
+            ":groupId" => $groupId
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getGroupSubmissions(int $groupId): array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                ID,
+                numero,
+                proyecto,
+                fechaentrega,
+                grupoid
+            FROM entrega
+            WHERE grupoid = :groupId
+            ORDER BY numero DESC
+        ");
+
+        $stmt->execute([
+            ":groupId" => $groupId
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createGroupSubmission(int $groupId, string $projectUrl): int|false {
+        try {
+            $this->conn->beginTransaction();
+
+            $numberStmt = $this->conn->prepare("
+                SELECT COALESCE(MAX(numero), 0) + 1 AS nextNumber
+                FROM entrega
+                WHERE grupoid = :groupId
+            ");
+
+            $numberStmt->execute([
+                ":groupId" => $groupId
+            ]);
+
+            $submissionNumber = (int) $numberStmt->fetch(PDO::FETCH_ASSOC)["nextNumber"];
+
+            $stmt = $this->conn->prepare("
+                INSERT INTO entrega (numero, proyecto, fechaentrega, grupoid)
+                VALUES (:numero, :proyecto, :fechaentrega, :grupoid)
+            ");
+
+            $inserted = $stmt->execute([
+                ":numero" => $submissionNumber,
+                ":proyecto" => $projectUrl,
+                ":fechaentrega" => date("Y-m-d H:i:s"),
+                ":grupoid" => $groupId
+            ]);
+
+            if (!$inserted) {
+                $this->conn->rollBack();
+                return false;
+            }
+
+            $submissionId = (int) $this->conn->lastInsertId();
+
+            $this->conn->commit();
+
+            return $submissionId;
+
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            error_log("Error al crear entrega de grupo: " . $e->getMessage());
+            return false;
+        }
+    }
 }
