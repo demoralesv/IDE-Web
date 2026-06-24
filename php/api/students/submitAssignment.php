@@ -14,7 +14,7 @@ function uploadSubmissionFile(int $evaluationId, int $groupId): string|false {
         return false;
     }
 
-    $maxSize = 25 * 1024 * 1024;
+    $maxSize = 1000 * 1024 * 1024;
 
     if ($_FILES["projectFile"]["size"] > $maxSize) {
         return false;
