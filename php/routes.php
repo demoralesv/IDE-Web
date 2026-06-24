@@ -45,6 +45,8 @@ post('/courses/$ID/assignments/$assignmentID/edit', 'editAssignment.php');
 get('/courses/$courseID/assignments/$evaluationID/groups', 'manageAssignmentGroups.php');
 post('/courses/$courseID/assignments/$evaluationID/groups', 'manageAssignmentGroups.php');
 
+get('/submissions/$ID/download', 'downloadSubmission.php');
+
 get('/logout', 'logout.php');
 
 // ##################################################

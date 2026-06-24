@@ -180,9 +180,7 @@ if ($teacherId === null) {
 
                                     <?php if (!empty($submission["proyecto"])) { ?>
                                         <a 
-                                            href="<?php echo htmlspecialchars($submission["proyecto"], ENT_QUOTES, 'UTF-8'); ?>" 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
+                                            href="/submissions/<?php echo urlencode($submission["ID"]); ?>/download" 
                                             class="attachment-link"
                                         >
                                             <i class="fa-solid fa-up-right-from-square"></i>

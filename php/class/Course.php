@@ -481,6 +481,34 @@ class Course {
         }
     }
 
+    public function getSubmissionForDownload(int $submissionId, int $teacherId): ?array {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                e.ID,
+                e.numero,
+                e.proyecto,
+                e.fechaentrega,
+                e.grupoid,
+                g.numero AS grupoNumero
+            FROM entrega e
+            INNER JOIN grupo g ON g.ID = e.grupoid
+            INNER JOIN evaluacion ev ON ev.ID = g.evaluacionID
+            INNER JOIN curso c ON c.ID = ev.cursoid
+            WHERE e.ID = :submissionId
+            AND c.profesorusuarioid = :teacherId
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            ":submissionId" => $submissionId,
+            ":teacherId" => $teacherId
+        ]);
+
+        $submission = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $submission ?: null;
+    }
+
 
 
 }

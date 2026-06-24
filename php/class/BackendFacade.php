@@ -147,4 +147,8 @@ class BackendFacade {
         return $this->course->createAssignmentGroup($evaluationId, $studentIds);
     }
 
+    public function getSubmissionForDownload(int $submissionId, int $teacherId): ?array {
+        return $this->course->getSubmissionForDownload($submissionId, $teacherId);
+    }
+
 }
