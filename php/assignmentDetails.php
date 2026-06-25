@@ -42,6 +42,31 @@ if ($teacherId === null) {
             $error = "La tarea no existe o no pertenece a este curso.";
         } else {
             $submissions = $backend->getSubmissionsByAssignment((int)$assignmentId);
+
+            $submissionsByGroup = [];
+            $latestSubmissions = [];
+
+            if (!empty($submissions)) {
+                foreach ($submissions as $submission) {
+                    $groupKey = (string)($submission["grupoNumero"] ?? "sin-grupo");
+
+                    if (!isset($submissionsByGroup[$groupKey])) {
+                        $submissionsByGroup[$groupKey] = [];
+                    }
+
+                    $submissionsByGroup[$groupKey][] = $submission;
+                }
+
+                foreach ($submissionsByGroup as $groupKey => &$groupSubmissions) {
+                    usort($groupSubmissions, function ($a, $b) {
+                        return strtotime($b["fechaentrega"] ?? "") <=> strtotime($a["fechaentrega"] ?? "");
+                    });
+
+                    $latestSubmissions[$groupKey] = $groupSubmissions[0];
+                }
+
+                unset($groupSubmissions);
+            }
         }
     }
 }
@@ -146,11 +171,9 @@ if ($teacherId === null) {
                     </div>
                 </section>
 
-                
-
                 <section class="dashboard-card submissions-card">
                     <h2>Entregas</h2>
-                    <p>Entregas realizadas por estudiantes.</p>
+                    <p>Última entrega registrada por cada grupo.</p>
 
                     <?php if (empty($submissions)) { ?>
 
@@ -161,7 +184,10 @@ if ($teacherId === null) {
                     <?php } else { ?>
 
                         <div class="task-list">
-                            <?php foreach ($submissions as $submission) { ?>
+                            <?php foreach ($latestSubmissions as $groupKey => $submission) { 
+                                $safeGroupId = preg_replace('/[^a-zA-Z0-9_-]/', '_', (string)$groupKey);
+                                $groupSubmissionCount = count($submissionsByGroup[$groupKey]);
+                            ?>
                                 <div class="task-list-item">
                                     <div>
                                         <strong>
@@ -178,20 +204,93 @@ if ($teacherId === null) {
                                         </span>
                                     </div>
 
-                                    <?php if (!empty($submission["proyecto"])) { ?>
-                                        <a 
-                                            href="/submissions/<?php echo urlencode($submission["ID"]); ?>/download" 
-                                            class="attachment-link"
-                                        >
-                                            <i class="fa-solid fa-up-right-from-square"></i>
-                                            Ver entrega
-                                        </a>
-                                    <?php } else { ?>
-                                        <span>Sin archivo</span>
-                                    <?php } ?>
+                                    <div class="submission-actions">
+                                        <?php if ($groupSubmissionCount > 1) { ?>
+                                            <button
+                                                type="button"
+                                                class="history-button"
+                                                title="Ver historial de entregas"
+                                                onclick="openModal('historyModal-<?php echo htmlspecialchars($safeGroupId, ENT_QUOTES); ?>')"
+                                            >
+                                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                            </button>
+                                        <?php } ?>
+
+                                        <?php if (!empty($submission["proyecto"])) { ?>
+                                            <a 
+                                                href="/submissions/<?php echo urlencode($submission["ID"]); ?>/download" 
+                                                class="attachment-link"
+                                            >
+                                                <i class="fa-solid fa-up-right-from-square"></i>
+                                                Ver entrega
+                                            </a>
+                                        <?php } else { ?>
+                                            <span>Sin archivo</span>
+                                        <?php } ?>
+                                    </div>
                                 </div>
                             <?php } ?>
                         </div>
+
+                        <?php foreach ($submissionsByGroup as $groupKey => $groupSubmissions) { 
+                            if (count($groupSubmissions) <= 1) {
+                                continue;
+                            }
+
+                            $safeGroupId = preg_replace('/[^a-zA-Z0-9_-]/', '_', (string)$groupKey);
+                        ?>
+                            <div id="historyModal-<?php echo htmlspecialchars($safeGroupId); ?>" class="modal-overlay">
+                                <div class="modal submission-history-modal">
+                                    <div class="modal-header">
+                                        <div>
+                                            <h2>Historial de entregas</h2>
+                                            <p>Grupo #<?php echo htmlspecialchars($groupKey); ?></p>
+                                        </div>
+
+                                        <button 
+                                            type="button" 
+                                            class="modal-close-button"
+                                            onclick="closeModal('historyModal-<?php echo htmlspecialchars($safeGroupId, ENT_QUOTES); ?>')"
+                                        >
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="task-list">
+                                        <?php foreach ($groupSubmissions as $submission) { ?>
+                                            <div class="task-list-item">
+                                                <div>
+                                                    <strong>
+                                                        Entrega #<?php echo htmlspecialchars($submission["numero"]); ?>
+                                                    </strong>
+
+                                                    <span>
+                                                        Grupo #<?php echo htmlspecialchars($submission["grupoNumero"]); ?>
+                                                    </span>
+
+                                                    <span>
+                                                        Fecha:
+                                                        <?php echo htmlspecialchars($submission["fechaentrega"]); ?>
+                                                    </span>
+                                                </div>
+
+                                                <?php if (!empty($submission["proyecto"])) { ?>
+                                                    <a 
+                                                        href="/submissions/<?php echo urlencode($submission["ID"]); ?>/download" 
+                                                        class="attachment-link"
+                                                    >
+                                                        <i class="fa-solid fa-up-right-from-square"></i>
+                                                        Ver entrega
+                                                    </a>
+                                                <?php } else { ?>
+                                                    <span>Sin archivo</span>
+                                                <?php } ?>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
 
                     <?php } ?>
                 </section>
@@ -202,5 +301,30 @@ if ($teacherId === null) {
 
     </main>
 </div>
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add("show");
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("show");
+    }
+
+    document.querySelectorAll(".modal-overlay").forEach(function(modal) {
+        modal.addEventListener("click", function(event) {
+            if (event.target === this) {
+                this.classList.remove("show");
+            }
+        });
+    });
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            document.querySelectorAll(".modal-overlay.show").forEach(function(modal) {
+                modal.classList.remove("show");
+            });
+        }
+    });
+</script>
 </body>
 </html>
