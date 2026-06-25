@@ -147,8 +147,8 @@ input[type="text"]:focus {
 }
 
 .message.success {
-  background: #efe;
-  color: var(--success-color);
+  background: var(--success-color);
+  color: black;
   border: 1px solid #cfc;
 }
 
