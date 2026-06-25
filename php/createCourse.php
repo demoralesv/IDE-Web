@@ -29,6 +29,8 @@ $error = "";
         
         if ($name === "" || $code === "" || $group === "") {
             $error = "Favor ingresar todos los datos del curso.";
+        } elseif (!ctype_digit($code) || !ctype_digit($group)) {
+            $error = "El código del curso y el grupo solo pueden contener números.";
         } elseif ($teacherId === null) {
             $error = "No se pudo identificar al profesor.";
         } else {
@@ -107,6 +109,9 @@ $error = "";
                         placeholder="Ejemplo: 1802"
                         value="<?php echo htmlspecialchars($_POST["code"] ?? ""); ?>"
                         required
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     >
                 </div>
 
@@ -119,6 +124,9 @@ $error = "";
                         placeholder="Ejemplo: 1"
                         value="<?php echo htmlspecialchars($_POST["group"] ?? ""); ?>"
                         required
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     >
                 </div>
 
